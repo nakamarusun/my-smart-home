@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<head>
+<title> Add a new Button </title>
+<style>
+    h1 {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        margin-bottom: 0px;
+    }
+    h2 {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        font-weight: normal;
+        font-size: large;
+        margin-top: 0px;
+        color: #464646;
+    }
+    .head_button_container {
+        display: flex;
+        justify-content: center;
+    }
+    .button {
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 20px 20px 20px 20px;
+        max-width: 300px;
+        min-width: 90px;
+        width: 130px;
+        border-radius: 25px;
+        margin: 10px;
+        box-shadow: 2px 4px 3px #e9e9f1;
+        transition: filter 0.02s;
+    }
+    .button:hover {
+        filter: brightness(0.95);
+    }
+    .small_button {
+        width: 100px;
+        height: 120px;
+    }
+    .button .logo {
+        font-size: 48pt;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .button .caption {
+        font-size: 12pt;
+    }
+    .button_container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 500px;
+        margin: auto;
+    }
+    a {
+        color: inherit;
+        outline-width: 0px;
+        text-decoration: none;
+    }
+    .large_circle_button {
+        display: block;
+        line-height: 300px !important;
+        font-size: 20pt;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        background-color: #b4e5f8;
+        border-radius: 50%;
+        height: 300px;
+        width: 300px;
+        margin: auto;
+        
+    }
+    .large_circle_button:hover {
+        background-color: #a3ccdf;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>Sensor IR terbuka!</h1>
+<h2>Tekan remote untuk merekamnya di gadget.</h2>
+<h2>Jika sudah, klik tombol dibawah</h2>
+<a href="/remote/done" class="large_circle_button">sudah!</a>
+</body>

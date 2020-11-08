@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<head>
+<title> Add a new Button </title>
+<style>
+    body {
+        width: 600px;
+        margin: auto;
+    }
+    h1 {
+        font-family: Arial, Helvetica, sans-serif;
+        margin-bottom: 0px;
+    }
+    h2 {
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: normal;
+        font-size: large;
+        margin-top: 0px;
+        color: #464646;
+    }
+    h3 {
+        font-family: sans-serif;
+        font-weight: normal;
+        font-size: medium;
+        margin: 5px 0px 5px 0px;
+    }
+    h4 {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: normal;
+    }
+    .head_button_container {
+        display: flex;
+        justify-content: center;
+    }
+    .bu {
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 20px 20px 20px 20px;
+        max-width: 300px;
+        min-width: 90px;
+        width: 130px;
+        border-radius: 25px;
+        margin: 10px;
+        box-shadow: 2px 4px 3px #e9e9f1;
+        transition: filter 0.02s;
+        cursor: pointer;
+        user-select: none;
+    }
+    .bu:hover {
+        filter: brightness(0.95);
+    }
+    .s_bu {
+        width: 100px;
+        height: 120px;
+    }
+    .lg {
+        font-size: 48pt;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .bu .cp {
+        font-size: 12pt;
+        text-align: left;
+        padding-top: 10px;
+        word-wrap: break-word;
+    }
+    .button_container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 500px;
+        margin: auto;
+    }
+    a {
+        color: inherit;
+        outline-width: 0px;
+        text-decoration: none;
+    }
+    .large_circle_button {
+        display: block;
+        line-height: 300px !important;
+        font-size: 20pt;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #b4e5f8;
+        border-radius: 50%;
+        height: 300px;
+        width: 300px;
+        margin: auto;
+        
+    }
+    .large_circle_button:hover {
+        background-color: #a3ccdf;
+        cursor: pointer;
+    }
+    .center_text {
+        text-align: center;
+    }
+    input {
+        width: 200px;
+    }
+    input[id="color"] {
+        width: 50px;
+    }
+    input[type="submit"] {
+        width: 100px;
+    }
+</style>
+</head>
+<body>
+<div class="center_text">
+<h1>Terrekam.</h1>
+<h2>Data IR telah berhasil direkam dan diterima.</h2>
+<h4>Data IR yang diterima:</h4>
+<h4>%data%</h4>
+</div>
+<form id="form" method="POST" style="margin-top: 50px;">
+    <h3>Button Caption: </h3><input id="caption" type="text" class="input" placeholder="Caption" maxlength="20" autofocus/><p>
+    <h3>Button Symbol(1 character only!): </h3><input id="symbol" type="text" placeholder="Symbol" maxlength="1"/><p>
+    <h3>Color: </h3><input type="color" id="color" value="#aef2dd"><br><br><br>
+    <input type="submit">
+</form>
+<h1 class="center_text">Result:</h1>
+<div class="button_container">
+<div id="b_btn" class="bu s_bu" style="background: #aef2dd;"><div id="b_sym" class="lg">@</div><div id="b_name" class="cp">Change the text above!</div></div>
+</div>
+<script>
+var $=function(id){return document.getElementById(id);};
+$("caption").onkeyup = function() {$('b_name').innerText = $('caption').value;}
+$("symbol").onkeyup = function() {$('b_sym').innerText = $('symbol').value;}
+$("color").addEventListener("change", function(){$('b_btn').style.background = $('color').value}, false);
+</script>
+</body>

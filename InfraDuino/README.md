@@ -1,0 +1,1 @@
+https://github.com/esp8266/arduino-esp8266fs-plugin
