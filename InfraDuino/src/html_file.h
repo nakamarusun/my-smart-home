@@ -109,9 +109,7 @@ const char add_button_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML>
 <head>
 <title> Add a new Button </title>
-<style>
-%STYLE%
-</style>
+<link rel="stylesheet" href="/style">
 </head>
 <body>
 <div class="center_text">
@@ -127,9 +125,7 @@ const char add_button_done_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML>
 <head>
 <title> Signal Received! </title>
-<style>
-%STYLE%
-</style>
+<link rel="stylesheet" href="/style">
 </head>
 <body>
 <div class="center_text">
@@ -161,9 +157,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML>
 <head>
 <title>IR Wi-Fi</title>
-<style>
-%STYLE%
-</style>
+<link rel="stylesheet" href="/style">
 </head>
 <body>
 <div class="center_text">

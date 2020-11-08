@@ -115,7 +115,9 @@ void setup() {
   server.on("/remote/add", HTTP_GET, HtmlResponder::addButton);
   server.on("/remote/done", HTTP_GET, HtmlResponder::doneAddButton);
   server.on("/remote/done", HTTP_POST, HtmlResponder::doneAddButtonPost);
+  server.on("/remote/del", HTTP_POST, HtmlResponder::delButtonPost);
   server.on("/remote/file", HTTP_GET, HtmlResponder::remoteFile);
+  server.on("/style", HTTP_GET, HtmlResponder::styleResponder);
   server.onNotFound(HtmlResponder::notFound);
 
   // Mulai servernya

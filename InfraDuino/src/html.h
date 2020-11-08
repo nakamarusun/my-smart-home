@@ -19,15 +19,6 @@ namespace HtmlResponder {
     uint16_t sizeIR;
 
     // Processors
-    String style(const String& var) {
-
-        String result = "";
-        if (var == "STYLE") {
-            return style_html;
-        }
-        return result;
-    }
-
     String indexProc(const String& var) {
 
       String result = "";
@@ -38,8 +29,6 @@ namespace HtmlResponder {
         result += "/` atau `";
         result += WiFi.localIP().toString();
         result += "`";
-      } else if (var == "STYLE") {
-        //   result += style_html;
       } else if (var == "REMOTES_LIST") {
 
         /*
@@ -58,7 +47,7 @@ namespace HtmlResponder {
         // Initial allocation
         DynamicJsonDocument doc(1024);
         File file = LittleFS.open(REMOTE_FILE, "r");
-
+        
         deserializeJson(doc, file);
 
         // the Json object to manipulate
@@ -70,7 +59,6 @@ namespace HtmlResponder {
         // Dapatkan array remotenya.
         JsonArray remotes = obj["remotes"];
         
-        serializeJson(doc, Serial);
         Serial.println(remotes.size());
 
         for (auto val : remotes) {
@@ -91,9 +79,7 @@ namespace HtmlResponder {
     }
 
     String doneAddButtonProc(const String& var) {
-        if (var == "STYLE") {
-            return style_html;
-        } else if (var == "DATA") {
+        if (var == "DATA") {
             String result = "";
             for (uint16_t i = 0; i < sizeIR; i++) {
                 result += rawArrIR[i];
@@ -105,6 +91,15 @@ namespace HtmlResponder {
     }
 
     // Responders
+    void styleResponder(AsyncWebServerRequest* request) {
+
+        AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", style_html);
+        request->send(response);
+    }
+
+    void remoteFile (AsyncWebServerRequest* request) {
+        request->send(LittleFS, REMOTE_FILE, "application/json");
+    }
 
     void index(AsyncWebServerRequest* request) {
 
@@ -122,7 +117,7 @@ namespace HtmlResponder {
         // bisa menerima sinyal IR.
         isReceivingIR = true;
         sizeIR = 0;
-        AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", add_button_html, style);
+        AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", add_button_html);
         request->send(response);
     }
 
@@ -176,8 +171,9 @@ namespace HtmlResponder {
         request->send(200, "text/html", "<a href=\"/\">Sukses di tambah! Klik untuk kembali.</a>");
     }
 
-    void remoteFile (AsyncWebServerRequest* request) {
-        request->send(LittleFS, REMOTE_FILE, "application/json");
+    void delButtonPost(AsyncWebServerRequest* request) {
+
     }
+
 };
 
