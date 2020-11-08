@@ -14,7 +14,6 @@
 // Library ESP
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
-#include <IRsend.h>
 #include <IRutils.h>
 
 #include <ArduinoJson.h>
@@ -27,7 +26,6 @@
 
 // Variabel LED infra merah
 IRrecv irrecv(RECV_PIN, 1024, 50, false);
-IRsend irsend(LED_PIN);
 decode_results irResult;
 
 // Variable server
@@ -109,7 +107,7 @@ void setup() {
     
   // Mulai inframerah
   irrecv.enableIRIn();
-  irsend.begin();
+  HtmlResponder::irsend.begin();
 
   server.on("/", HTTP_GET, HtmlResponder::index);
   server.on("/remote/add", HTTP_GET, HtmlResponder::addButton);
@@ -117,7 +115,9 @@ void setup() {
   server.on("/remote/done", HTTP_POST, HtmlResponder::doneAddButtonPost);
   server.on("/remote/del", HTTP_POST, HtmlResponder::delButtonPost);
   server.on("/remote/file", HTTP_GET, HtmlResponder::remoteFile);
+  server.on("/remote", HTTP_GET, HtmlResponder::clickRemote);
   server.on("/style", HTTP_GET, HtmlResponder::styleResponder);
+  server.on("/temp_ir", HTTP_GET, HtmlResponder::tempIR);
   server.onNotFound(HtmlResponder::notFound);
 
   // Mulai servernya
@@ -127,16 +127,25 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   MDNS.update();
 
   if (HtmlResponder::isReceivingIR) {
 
     if (irrecv.decode(&irResult)) {
       Serial.println("RECEIVED IR SIGNAL");
-      // HtmlResponder::rawArrIR = resultToRawArray(&irResult);
+      HtmlResponder::rawArrIR = resultToRawArray(&irResult);
       HtmlResponder::sizeIR = getCorrectedRawLength(&irResult);
-      
+
+      // Save the IR result into an temporary file.
+      File file = LittleFS.open("/temp_ir", "w");
+
+      for (int i = 0; i < HtmlResponder::sizeIR; i++) {
+        file.write(HtmlResponder::rawArrIR[i]);
+        file.write("\n");
+      }
+
+      // Jangan lupa untuk diclose~
+      file.close();
       irrecv.resume();
       HtmlResponder::isReceivingIR = false;
     }

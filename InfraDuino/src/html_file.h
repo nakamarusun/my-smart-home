@@ -165,6 +165,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <h1>Wi-Fi IR</h1>
 <h2>v1.0 Smarthome System</h2>
 <h2>Laman ini bisa diakses dari: %IP%</h2>
+<h2 id="but_res"></h2>
 </div>
 <div class="head_button_container">
     <a href="/remote/add" class="bu" style="background-color: #8be3f3;"><div class="lg">+</div><div class="cp">Add new Button</div></a>
@@ -183,6 +184,11 @@ const char index_html[] PROGMEM = R"rawliteral(
     function toggleDel() {
         var form = document.getElementById("del");
         if (form.style.display == "block") form.style.display = "none"; else form.style.display = "block";
+    }
+    function btn(num) {
+        fetch("/remote/?id=" + num)
+        .then(response => response.text())
+        .then(html => document.getElementById("but_res").innerHTML = html);
     }
 </script>
 </body>
