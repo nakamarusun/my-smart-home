@@ -20,13 +20,14 @@ namespace HtmlResponder {
     bool isReceivingIR = false;
 
     IRsend irsend(LED_PIN);
-
-    uint16_t *rawArrIR;
+    
+    // Sediakan array panjang 1024.
+    uint16_t rawIRArr[IR_ARRAY_SIZE];
     uint16_t sizeIR;
 
     // Processors
     String indexProc(const String& var) {
-
+        
       String result = "";
       
       if (var == "IP") {
@@ -86,7 +87,7 @@ namespace HtmlResponder {
         if (var == "DATA") {
             String result = "";
             for (uint16_t i = 0; i < sizeIR; i++) {
-                result += rawArrIR[i];
+                result += rawIRArr[i];
                 result += " ";
             }
             return result;
@@ -101,11 +102,6 @@ namespace HtmlResponder {
         request->send(response);
     }
 
-    void tempIR(AsyncWebServerRequest* request) {
-        request->send(LittleFS, "/temp_ir", "text/plain");
-    }
-
-
     void remoteFile (AsyncWebServerRequest* request) {
         request->send(LittleFS, REMOTE_FILE, "application/json");
     }
@@ -118,6 +114,18 @@ namespace HtmlResponder {
 
     void notFound(AsyncWebServerRequest* request) {
         request->send(404, "text/plain", "no bueno lol");
+    }
+
+    void getTempIr(AsyncWebServerRequest* request) {
+        String result = "";
+        result += sizeIR;
+        result += "\n\n";
+        for (uint16_t i = 0; i < sizeIR; i++) {
+            result += rawIRArr[i];
+            result += "\n";
+        }
+        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", result);
+        request->send(response);
     }
 
     void clickRemote(AsyncWebServerRequest* request) {
@@ -189,8 +197,8 @@ namespace HtmlResponder {
 
         // Reset semuanya, dan buat mesin
         // bisa menerima sinyal IR.
-        isReceivingIR = true;
         sizeIR = 0;
+        isReceivingIR = true;
         AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", add_button_html);
         request->send(response);
     }
@@ -230,7 +238,7 @@ namespace HtmlResponder {
         JsonArray data = newRemote.createNestedArray("data");
 
         for (uint16_t i = 0; i < sizeIR; i++) {
-            data.add(rawArrIR[i]);
+            data.add(rawIRArr[i]);
         }
 
         file = LittleFS.open(REMOTE_FILE, "w");
@@ -296,4 +304,3 @@ namespace HtmlResponder {
     }
 
 };
-

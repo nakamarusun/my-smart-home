@@ -117,7 +117,7 @@ void setup() {
   server.on("/remote/file", HTTP_GET, HtmlResponder::remoteFile);
   server.on("/remote", HTTP_GET, HtmlResponder::clickRemote);
   server.on("/style", HTTP_GET, HtmlResponder::styleResponder);
-  server.on("/temp_ir", HTTP_GET, HtmlResponder::tempIR);
+  server.on("/tempIR", HTTP_GET, HtmlResponder::getTempIr);
   server.onNotFound(HtmlResponder::notFound);
 
   // Mulai servernya
@@ -133,19 +133,26 @@ void loop() {
 
     if (irrecv.decode(&irResult)) {
       Serial.println("RECEIVED IR SIGNAL");
-      HtmlResponder::rawArrIR = resultToRawArray(&irResult);
-      HtmlResponder::sizeIR = getCorrectedRawLength(&irResult);
 
-      // Save the IR result into an temporary file.
-      File file = LittleFS.open("/temp_ir", "w");
+      uint16_t* rawArrIr;
+
+      rawArrIr = resultToRawArray(&irResult);
+      HtmlResponder::sizeIR = constrain(getCorrectedRawLength(&irResult), 0, IR_ARRAY_SIZE);
 
       for (int i = 0; i < HtmlResponder::sizeIR; i++) {
-        file.write(HtmlResponder::rawArrIR[i]);
-        file.write("\n");
+        HtmlResponder::rawIRArr[i] = rawArrIr[i];
       }
 
+      // // Save the IR result into an temporary file.
+      // File file = LittleFS.open("/temp_ir", "w");
+
+      // for (int i = 0; i < HtmlResponder::sizeIR; i++) {
+      //   file.write(HtmlResponder::rawArrIR[i]);
+      //   file.write("\n");
+      // }
+
       // Jangan lupa untuk diclose~
-      file.close();
+      // file.close();
       irrecv.resume();
       HtmlResponder::isReceivingIR = false;
     }

@@ -5,8 +5,8 @@ ke kemauan hatimu~
 
 #define RECV_PIN 0 // Pin receive IR
 #define LED_PIN 2 // Pin send IR
-
 #define IR_SEND_FREQ 38000 // IR send frequency (default: 38KHz)
+#define IR_ARRAY_SIZE 1024 // The size of the IR array buffer.
 
 #define AP_TIMEOUT 60 // Timeout dalam detik membuka mode AP
 
