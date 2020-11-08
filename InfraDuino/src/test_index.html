@@ -105,7 +105,6 @@
     }
     .del_form {
         text-align: center;
-        display: none;
     }
 </style>
 </head>
@@ -119,9 +118,9 @@
     <a href="/remote/add" class="bu" style="background-color: #8be3f3;"><div class="lg">+</div><div class="cp">Add new Button</div></a>
     <div onclick="toggleDel()" class="bu" style="background-color: #FFF; border: 1px solid rgb(118, 28, 141);"><div class="lg">-</div><div class="cp">Delete a Button</div></div>
 </div>
-<form action="/remote/del" class="del_form" id="del" method="POST">
+<form action="/remote/del" class="del_form" id="del" method="POST" style="display: none;">
     <h3>ID to delete: </h3>
-    <input id="del_id" type="text" class="input" placeholder="ID" maxlength="5" autofocus/>
+    <input id="del_id" name="del_id" type="text" class="input" placeholder="ID" maxlength="5" autofocus/>
     <input type="submit" value="Enter">
 </form>
 <div style="width: 400px; border-bottom: 1px solid #AAA; margin: 20px auto 20px auto;"></div>

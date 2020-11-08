@@ -9,6 +9,7 @@
 
 #include "conf.h"
 #include "html_file.h"
+#include "util.h"
 
 namespace HtmlResponder {
 
@@ -58,8 +59,6 @@ namespace HtmlResponder {
 
         // Dapatkan array remotenya.
         JsonArray remotes = obj["remotes"];
-        
-        Serial.println(remotes.size());
 
         for (auto val : remotes) {
             result += "<a href=\"/remote/?id="
@@ -124,7 +123,8 @@ namespace HtmlResponder {
     void doneAddButton(AsyncWebServerRequest* request) {
         if (sizeIR == 0) {
             // Kalau sizenya 0, berarti belum diterima sinyal baru.
-            request->send(200, "text/plain", "The IR signal is not valid");
+            AsyncWebServerResponse *response = request->beginResponse(200, "text/html", F("<a href=\"/\">Sinyal IR ditak valid. Klik untuk kembali.</a>"));
+            request->send(response);
         } else {
             AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", add_button_done_html, doneAddButtonProc);
             request->send(response);
@@ -168,11 +168,64 @@ namespace HtmlResponder {
         file.flush();
         file.close();
 
-        request->send(200, "text/html", "<a href=\"/\">Sukses di tambah! Klik untuk kembali.</a>");
+        AsyncWebServerResponse *response = request->beginResponse(200, "text/html", F("<a href=\"/\">Sukses di tambah! Klik untuk kembali.</a>"));
+        request->send(response);
     }
 
     void delButtonPost(AsyncWebServerRequest* request) {
 
+        // Masukkan ke memori untuk di proses
+        DynamicJsonDocument doc(1024);
+        File file = LittleFS.open(REMOTE_FILE, "r");
+        deserializeJson(doc, file);
+
+        JsonObject json = doc.as<JsonObject>();
+
+        file.close();
+
+        // Masukkan ke JsonArray
+        JsonArray remotes = json["remotes"];
+        // Dapatkan dari POST request ID mana yang mau didelete.
+        String idString = request->getParam("del_id", true)->value();
+
+        Serial.println("Inb4 string parsing");
+        // Coba untuk parse stringnya menjadi integer.
+        int id;
+        if (isStringDigit(idString)) {
+            id = idString.toInt();
+        } else {
+            id = -1;
+        }
+        
+        // Cari IDnya secara linear.
+        bool found = false;
+        int index = 0;
+
+        for (auto val : remotes) {
+            if (val["id"].as<int>() == id) {
+                found = true;
+                break;
+            }
+            index++;
+        }
+
+        // Hapus JSONarraynya jika ditemukan.
+        if (found) {
+            remotes.remove(index);
+
+            file = LittleFS.open(REMOTE_FILE, "w");
+            // Setelah data baru sudah dihapus, kita bisa save kembali ke filenya
+            serializeJson(doc, file);
+            file.flush();
+            file.close();
+
+            AsyncWebServerResponse *response = request->beginResponse(200, "text/html", F("<a href=\"/\">Sukses di dihapus! Klik untuk kembali.</a>"));
+            request->send(response);
+        } else {
+            // Jika tidak, umumkan bahwa ID tidak ditemukan.
+            AsyncWebServerResponse *response = request->beginResponse(200, "text/html", F("<a href=\"/\">ID tidak ditemukan! Klik untuk kembali.</a>"));
+            request->send(response);
+        }
     }
 
 };

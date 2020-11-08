@@ -35,6 +35,8 @@ h4 {
     border-radius: 25px;
     margin: 10px;
     transition: filter 0.02s;
+    cursor: pointer;
+    user-select: none;
 }
 .bu:hover {
     filter: brightness(0.95);
@@ -97,7 +99,6 @@ input[type="submit"] {
 }
 .del_form {
     text-align: center;
-    display: none;
 }
 )rawliteral";
 
@@ -135,9 +136,9 @@ const char add_button_done_html[] PROGMEM = R"rawliteral(
 <h4>%DATA%</h4>
 </div>
 <form id="form" method="POST" style="margin-top: 50px;">
-    <h3>Button Caption: </h3><input id="caption" type="text" class="input" placeholder="Caption" maxlength="20" autofocus/><p>
-    <h3>Button Symbol(1 character only!): </h3><input id="symbol" type="text" placeholder="Symbol" maxlength="1"/><p>
-    <h3>Color: </h3><input type="color" id="color" value="#aef2dd"><br><br><br>
+    <h3>Button Caption: </h3><input id="caption" name="caption" type="text" class="input" placeholder="Caption" maxlength="20" autofocus/><p>
+    <h3>Button Symbol(1 character only!): </h3><input id="symbol" name="symbol" type="text" placeholder="Symbol" maxlength="1"/><p>
+    <h3>Color: </h3><input type="color" id="color" name="color" value="#aef2dd"><br><br><br>
     <input type="submit">
 </form>
 <h1 class="center_text">Result:</h1>
@@ -169,9 +170,9 @@ const char index_html[] PROGMEM = R"rawliteral(
     <a href="/remote/add" class="bu" style="background-color: #8be3f3;"><div class="lg">+</div><div class="cp">Add new Button</div></a>
     <div onclick="toggleDel()" class="bu" style="background-color: #FFF; border: 1px solid rgb(118, 28, 141);"><div class="lg">-</div><div class="cp">Delete a Button</div></div>
 </div>
-<form action="/remote/del" class="del_form" id="del" method="POST">
+<form action="/remote/del" class="del_form" id="del" method="POST" style="display: none;">
     <h3>ID to delete: </h3>
-    <input id="del_id" type="text" class="input" placeholder="ID" maxlength="5" autofocus/>
+    <input id="del_id" name="del_id" type="text" class="input" placeholder="ID" maxlength="5" autofocus/>
     <input type="submit" value="Enter">
 </form>
 <div style="width: 400px; border-bottom: 1px solid #AAA; margin: 20px auto 20px auto;"></div>
