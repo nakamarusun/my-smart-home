@@ -225,6 +225,7 @@ namespace HtmlResponder {
             AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", add_button_done_html, doneAddButtonProc);
             request->send(response);
         }
+        isReceivingIR = false;
     }
 
     void doneAddButtonPost(AsyncWebServerRequest* request) { 
@@ -240,12 +241,19 @@ namespace HtmlResponder {
         // Masukkan ke JsonArray
         JsonArray remotes = json["remotes"];
 
+        // Dapatkan ID yang paling baru.
+        int id;
+        if (remotes.size() == 0) {
+            id = 1;
+        } else {
+            id = remotes[remotes.size() - 1].as<JsonObject>()["id"].as<int>() + 1;
+        }
+
         // Buat entri baru di JsonArray
         JsonObject newRemote = remotes.createNestedObject();
 
         // Masukkan data baru
-        int id = remotes[remotes.size() - 1]["id"].as<int>() + 2;
-        newRemote["id"] = id;
+        newRemote["id"] = String(id);
         newRemote["cp"] = request->getParam("caption", true)->value();
         newRemote["lg"] = request->getParam("symbol", true)->value();
         newRemote["cl"] = request->getParam("color", true)->value();

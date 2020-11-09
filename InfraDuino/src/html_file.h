@@ -117,6 +117,7 @@ const char add_button_html[] PROGMEM = R"rawliteral(
 <h1>Sensor IR terbuka!</h1>
 <h2>Tekan remote untuk merekamnya di gadget.</h2>
 <h2>Jika sudah, klik tombol dibawah</h2>
+<h3>*LED biru akan berhenti berkedip jika sinyal diterima.</h3>
 </div>
 <a href="/remote/done" class="large_circle_button">sudah!</a>
 </body>

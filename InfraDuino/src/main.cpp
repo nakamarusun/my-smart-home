@@ -39,7 +39,10 @@ DNSServer dns;
 
 void setup() {
 
+  #ifdef ENABLE_SERIAL
   Serial.begin(9600);
+  #endif
+  
   Serial.println("Initializing WiFi");
 
   // WiFi.disconnect();
@@ -104,6 +107,11 @@ void setup() {
         file.close();
       }
   }
+
+  #ifdef MARKER_LED_PIN
+    pinMode(MARKER_LED_PIN, OUTPUT);
+    digitalWrite(MARKER_LED_PIN, LOW);
+  #endif
     
   // Mulai inframerah
   irrecv.enableIRIn();
@@ -124,6 +132,9 @@ void setup() {
   server.begin();
 
   Serial.println("Semua sistem sukses di mulai!");
+  #ifndef ENABLE_SERIAL
+  Serial.end();
+  #endif
 }
 
 void loop() {
@@ -149,4 +160,9 @@ void loop() {
       HtmlResponder::isReceivingIR = false;
     }
   }
+
+  #ifdef MARKER_LED_PIN
+    // Ini akan membuat LED marker nyala dan mati setiap 250ms jika LED IR sedang menerima sinyal.
+    digitalWrite(MARKER_LED_PIN, HtmlResponder::isReceivingIR && ((millis() % 500) < 249) ? HIGH : LOW);
+  #endif
 }
