@@ -10,7 +10,9 @@ ke kemauan hatimu~
 
 #define AP_TIMEOUT 60 // Timeout dalam detik membuka mode AP
 
-#define CONNECT_TIMEOUT 30 //  Timeout dalam detik untuk connect ke Wi-Fi
+#define CONNECT_TIMEOUT 30 // Timeout dalam detik untuk connect ke Wi-Fi
+
+#define JSON_BUFFER 2048 // Buffer for the loaded json file.
 
 // Detail AP
 #define AP_SSID "IR_STATION"

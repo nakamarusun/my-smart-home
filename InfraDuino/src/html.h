@@ -21,7 +21,7 @@ namespace HtmlResponder {
 
     IRsend irsend(LED_PIN);
     
-    // Sediakan array panjang 1024.
+    // Sediakan array panjang IR_ARRAY_SIZE.
     uint16_t rawIRArr[IR_ARRAY_SIZE];
     uint16_t sizeIR;
 
@@ -43,16 +43,15 @@ namespace HtmlResponder {
         {
         "remotes": [{
             "id": 1,
-            "caption": "bruhbruh",
-            "logo": "+",
-            "color": "#FFF",
-            "data": []
+            "cp": "bruhbruh",
+            "lg": "+",
+            "cl": "#FFFFFF"
         }, ...]
         }
         */
 
         // Initial allocation
-        DynamicJsonDocument doc(1024);
+        DynamicJsonDocument doc(JSON_BUFFER);
         File file = LittleFS.open(REMOTE_FILE, "r");
         
         deserializeJson(doc, file);
@@ -70,11 +69,11 @@ namespace HtmlResponder {
             result += "<a onclick=\"btn("
                 + val["id"].as<String>()
                 + ")\" class=\"bu s_bu lg\" style=\"background: "
-                + val["color"].as<String>()
+                + val["cl"].as<String>()
                 + ";\">"
-                + val["logo"].as<String>()
+                + val["lg"].as<String>()
                 + "<div class=\"cp\">"
-                + val["id"].as<String>() + ". " + val["caption"].as<String>()
+                + val["id"].as<String>() + ". " + val["cp"].as<String>()
                 + "</div></a>";
         }
       }
@@ -136,7 +135,7 @@ namespace HtmlResponder {
         if (request->hasParam("id")) {
 
             // Masukkan ke memory.
-            DynamicJsonDocument doc(1024);
+            DynamicJsonDocument doc(JSON_BUFFER);
             File file = LittleFS.open(REMOTE_FILE, "r");
             deserializeJson(doc, file);
 
@@ -165,23 +164,37 @@ namespace HtmlResponder {
 
             // Jika IDnya ditemukan di dalam array
             if (found) {
-                JsonArray irData = remotes[index]["data"];
-                // Inisialisasi data.
-                int length = irData.size();
-                if (length == 0) {
-                    strResult += "Tidak ada sinyal di data json.";
-                } else {
-                    uint16_t rawIrData[length];
-                    // Masukkan data ke array.
-                    int irIndex = 0;
-                    for (auto val : irData) {
-                        rawIrData[irIndex] = val.as<int>();
-                        irIndex++;
+                // Bakal baca dari file menuju ke array.
+                file = LittleFS.open("remote_" + String(id), "r");
+                uint16_t loadedIR[IR_ARRAY_SIZE];
+                index = 0;
+                String valBuf = "";
+                while (true) {
+                    int ch = file.read();
+                    if (ch == -1) {
+                        // Read until EOF
+                        break;
+                    } else if (ch == 10) {
+                        // If newline is detected
+                        loadedIR[index] = valBuf.toInt();
+                        index++;
+                        valBuf = "";
+                    } else {
+                        // Add string number to buffer
+                        valBuf += char(ch);
                     }
-                    irsend.sendRaw(rawIrData, length, IR_SEND_FREQ);
-
-                    strResult += "Sinyal sukses dikirim!";
                 }
+                // for (int i = 0; i < index; i++) Serial.println(loadedIR[i]);
+                // Kirim array yang sudah dibuaat.
+                if (index != 0) {
+                    Serial.println("bruhhy?");
+                    Serial.println(index);
+                    irsend.sendRaw(loadedIR, index, IR_SEND_FREQ);
+                    strResult += "Sinyal IR sukses dikirimkan!";
+                } else {
+                    strResult += "File IR kosong.";
+                }
+                file.close();
             } else {
                 strResult += "id tidak ditemukan.";
             }
@@ -216,7 +229,7 @@ namespace HtmlResponder {
 
     void doneAddButtonPost(AsyncWebServerRequest* request) { 
         // Masukkan ke memori untuk di proses
-        DynamicJsonDocument doc(1024);
+        DynamicJsonDocument doc(JSON_BUFFER);
         File file = LittleFS.open(REMOTE_FILE, "r");
         deserializeJson(doc, file);
 
@@ -231,15 +244,19 @@ namespace HtmlResponder {
         JsonObject newRemote = remotes.createNestedObject();
 
         // Masukkan data baru
-        newRemote["id"] = remotes[remotes.size() - 1]["id"].as<int>() + 2;
-        newRemote["caption"] = request->getParam("caption", true)->value();
-        newRemote["logo"] = request->getParam("symbol", true)->value();
-        newRemote["color"] = request->getParam("color", true)->value();
-        JsonArray data = newRemote.createNestedArray("data");
+        int id = remotes[remotes.size() - 1]["id"].as<int>() + 2;
+        newRemote["id"] = id;
+        newRemote["cp"] = request->getParam("caption", true)->value();
+        newRemote["lg"] = request->getParam("symbol", true)->value();
+        newRemote["cl"] = request->getParam("color", true)->value();
+
+        file = LittleFS.open("remote_" + String(id), "w");
 
         for (uint16_t i = 0; i < sizeIR; i++) {
-            data.add(rawIRArr[i]);
+            file.print(rawIRArr[i]);
+            file.print("\n");
         }
+        file.close();
 
         file = LittleFS.open(REMOTE_FILE, "w");
 
@@ -256,7 +273,7 @@ namespace HtmlResponder {
     void delButtonPost(AsyncWebServerRequest* request) {
 
         // Masukkan ke memori untuk di proses
-        DynamicJsonDocument doc(1024);
+        DynamicJsonDocument doc(JSON_BUFFER);
         File file = LittleFS.open(REMOTE_FILE, "r");
         deserializeJson(doc, file);
 
@@ -293,6 +310,8 @@ namespace HtmlResponder {
             serializeJson(doc, file);
             file.flush();
             file.close();
+
+            LittleFS.remove("remote_" + String(id));
 
             AsyncWebServerResponse *response = request->beginResponse(200, "text/html", F("<a href=\"/\">Sukses di dihapus! Klik untuk kembali.</a>"));
             request->send(response);

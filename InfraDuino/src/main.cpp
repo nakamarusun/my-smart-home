@@ -143,16 +143,8 @@ void loop() {
         HtmlResponder::rawIRArr[i] = rawArrIr[i];
       }
 
-      // // Save the IR result into an temporary file.
-      // File file = LittleFS.open("/temp_ir", "w");
-
-      // for (int i = 0; i < HtmlResponder::sizeIR; i++) {
-      //   file.write(HtmlResponder::rawArrIR[i]);
-      //   file.write("\n");
-      // }
-
-      // Jangan lupa untuk diclose~
-      // file.close();
+      // Jangan lupa untuk mendelete pointernya~
+      delete []rawArrIr;
       irrecv.resume();
       HtmlResponder::isReceivingIR = false;
     }
