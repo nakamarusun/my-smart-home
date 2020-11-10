@@ -190,6 +190,10 @@ const char index_html[] PROGMEM = R"rawliteral(
         fetch("/remote/?id=" + num)
         .then(response => response.text())
         .then(html => document.getElementById("but_res").innerHTML = html);
+        setTimeout(timeoutText, 1500);
+    }
+    function timeoutText() {
+        document.getElementById("but_res").innerHTML = "";
     }
 </script>
 </body>

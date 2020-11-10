@@ -102,7 +102,15 @@ namespace HtmlResponder {
     }
 
     void remoteFile (AsyncWebServerRequest* request) {
-        request->send(LittleFS, REMOTE_FILE, "application/json");
+        // Akan menyediakan file JSON daftar remot jika tidak ada parameter GET.
+        // Jika ada, sediakan file tombol remotnya.
+        if (request->hasParam("id")) {
+
+            request->send(LittleFS, "remote_" + request->getParam("id")->value(), "text/plain");
+        } else {
+
+            request->send(LittleFS, REMOTE_FILE, "application/json");
+        }
     }
 
     void index(AsyncWebServerRequest* request) {

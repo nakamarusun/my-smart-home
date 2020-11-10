@@ -7,10 +7,10 @@ ke kemauan hatimu~
 // Rujuk kesini https://randomnerdtutorials.com/esp8266-pinout-reference-gpios/
 // #define ENABLE_SERIAL
 
-#define RECV_PIN 2 // Pin receive IR
+#define RECV_PIN 0 // Pin receive IR
 #define LED_PIN 3 // Pin send IR
 
-#define MARKER_LED_PIN 0 // pin LED yang akan nyala jika alat bisa menerima sesuatu.
+#define MARKER_LED_PIN 2 // pin LED yang akan nyala jika alat bisa menerima sesuatu.
 
 #define IR_SEND_FREQ 38000 // IR send frequency (default: 38KHz)
 #define IR_ARRAY_SIZE 1024 // The size of the IR array buffer.

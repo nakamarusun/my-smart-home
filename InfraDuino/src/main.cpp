@@ -25,7 +25,7 @@
 #include "conf.h"
 
 // Variabel LED infra merah
-IRrecv irrecv(RECV_PIN, 1024, 50, false);
+IRrecv irrecv(RECV_PIN, 2048, 75, false);
 decode_results irResult;
 
 // Variable server
