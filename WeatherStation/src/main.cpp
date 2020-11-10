@@ -79,11 +79,19 @@ void setup() {
   // Jangan pakai serial untuk project ini, karena semua pin terpakai.
   Serial.end();
 }
- 
+
+// Membantu agar sensor hanya mengupdate sekali saja
+// setiap UPDATE_SENSOR_EVERY.
+bool marker = false;
+
 void loop() {
 
   // Update setiap X detik. Beri 50ms untuk waktu luang.
   if (millis() % UPDATE_SENSOR_EVERY < 50) {
-    Sensor::update();
+
+    if (!marker) Sensor::update();
+    marker = true;
+  } else {
+    marker = false;
   }
 }

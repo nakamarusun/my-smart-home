@@ -1,5 +1,6 @@
+
 // Semua disini bebas di ubah user.
-#define UPDATE_SENSOR_EVERY 5 // Detik
+#define UPDATE_SENSOR_EVERY 5 // Dalam detik
 
 // Detail AP
 #define AP_SSID "WEATHER_STATION"
