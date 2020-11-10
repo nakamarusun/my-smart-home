@@ -1,96 +1,84 @@
 #include <Arduino.h>
 
 #include <Wire.h>
-#include "ESP8266WiFi.h"
-#include "ESP8266WebServer.h"
-#define seaLevelPressure_hPa 1013.25
 
+// Library ESP
+#include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <ESP8266mDNS.h>
+
+// For async web server
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
+#include <ESPAsyncWiFiManager.h> // Library Async Wi-Fi manager.
+
+// Library sensor
 #include <Adafruit_BMP085.h>
+#include <DHT.h>
+#include <BH1750.h>
 
-#ifndef LED_BUILTIN_ESP01
-#define LED_BUILTIN_ESP01 2
-#endif
+#include "conf.h"
 
+// Variabel server
+AsyncWebServer server(80);
+DNSServer dns;
+
+// Deklarasi obyek sensor.
 Adafruit_BMP085 bmp;
-bool bmp_status;
-
-ESP8266WebServer server(80);
-
-void updateStatus() {
-  
-}
-
-void handleRootPath() {            //Handler for the rooth path
-
-    String result = "";
-
-    if (bmp_status) {
-  
-      result += "Temperature = ";
-      result += bmp.readTemperature();
-      result += " *C\n";
-      
-      result += "Pressure = ";
-      result += bmp.readPressure();
-      result += " Pa\n";
-  
-      result += "Altitude = ";
-      result += bmp.readAltitude();
-      result += " meters\n";
-  
-      result += "Pressure at sealevel (calculated) = ";
-      result += bmp.readSealevelPressure();
-      result += " Pa\n";
-  
-      result += "Real altitude = ";
-      result += bmp.readAltitude(seaLevelPressure_hPa * 100);
-      result += " meters\n";
-
-    } else {
-      result += "No sensor detected.";
-    }
- 
-  server.send(200, "text/plain", result);
- 
-}
+BH1750 bh;
+DHT dht(DHT_PIN, DHT22);
  
 void setup() {
 
-  Wire.begin(0, 2);
+  // Jangan pakai serial untuk project ini, karena semua pin terpakai.
+  Serial.end();
 
-  delay(2000);
- 
-  Serial.begin(9600);
-  WiFi.begin("Javlyn", "jch5602881");  //Connect to the WiFi network
- 
-  while (WiFi.status() != WL_CONNECTED) {  //Wait for connection
- 
-    delay(500);
-    Serial.println("Waiting to connect…");
- 
+  Serial.println("Initializing WiFi");
+
+  // WiFi.disconnect();
+
+  // Bikin WiFiManager baru
+  AsyncWiFiManager wifiManager(&server, &dns);
+
+  // Disini kita bisa set timeout ketika ESP tidak di setting
+  // dalam jangka waktu yang ditentukan, bisa coba connect ke wi-fi lagi.
+  wifiManager.setConnectTimeout(CONNECT_TIMEOUT);
+  wifiManager.setConfigPortalTimeout(AP_TIMEOUT);
+  bool connected = false;
+
+  // Disini kita bisa menentukan apa nama dan password device kita
+  // untuk bisa membantu dia berhubung ke Wi-Fi yang kita inginkan
+  // Lakukan loop sampai koneksi dibuat.
+  do {
+
+    connected = wifiManager.autoConnect(AP_SSID, AP_PASS);
+    if (!connected) {
+      Serial.println("Gagal koneksi dari memory, membuka mode AP");
+      Serial.println("Belum terkoneksi... Mencoba lagi...");
+    }
+
+  } while (!connected);
+
+  Serial.println("Koneksi dibuat!");
+
+  // MDNS responder berguna supaya web servernya bisa langsung diakses
+  // dari MDNS_NAME.local, dan tidak usah memakai IPnya 
+  if (MDNS.begin(MDNS_NAME)) {
+    MDNS.addService("http", "tcp", 80);
+    Serial.print("mDNS responder dimulai di ");
+    Serial.println(MDNS_NAME);
+  } else {
+    Serial.print("mDNS responder gagal dimulai di ");
+    Serial.println(MDNS_NAME);
   }
 
-  Serial.print("Connected!");
- 
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());  //Print the local IP
- 
-  server.on("/other", []() {   //Define the handling function for the path
- 
-    server.send(200, "text / plain", "Other URL");
- 
-  });
- 
-  server.on("/", handleRootPath);    //Associate the handler function to the path
-  server.begin();                    //Start the server
-  Serial.println("Server listening");
 
-  bmp_status = bmp.begin();
- 
+
+  server.begin();
+
 }
  
 void loop() {
- 
-  server.handleClient();         //Handling of incoming requests
  
 }
