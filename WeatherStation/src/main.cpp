@@ -7,32 +7,24 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 
-// For async web server
+// Untuk async web server
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
 #include <ESPAsyncWiFiManager.h> // Library Async Wi-Fi manager.
 
-// Library sensor
-#include <Adafruit_BMP085.h>
-#include <DHT.h>
-#include <BH1750.h>
-
 #include "conf.h"
+#include "html.h"
 
 // Variabel server
 AsyncWebServer server(80);
 DNSServer dns;
-
-// Deklarasi obyek sensor.
-Adafruit_BMP085 bmp;
-BH1750 bh;
-DHT dht(DHT_PIN, DHT22);
  
 void setup() {
 
-  // Jangan pakai serial untuk project ini, karena semua pin terpakai.
-  Serial.end();
+  // Sangat penting. Ini karena seringkali penalokasi i2c tidak
+  // otomatis di 0 dan 2.
+  Wire.begin(0, 2);
 
   Serial.println("Initializing WiFi");
 
@@ -73,12 +65,25 @@ void setup() {
     Serial.println(MDNS_NAME);
   }
 
+  // Mulai semua sensor disini.
+  Sensor::dht.begin();
+  Sensor::bmp_status = Sensor::bmp.begin();
+  Sensor::bh_status = Sensor::bh.begin(BH1750::Mode::ONE_TIME_HIGH_RES_MODE);
+  Sensor::rns.begin();
 
+  server.on("/json", HTTP_GET, HtmlResponder::dataQuery);
+  server.on("/status", HTTP_GET, HtmlResponder::status);
 
   server.begin();
 
+  // Jangan pakai serial untuk project ini, karena semua pin terpakai.
+  Serial.end();
 }
  
 void loop() {
- 
+
+  // Update setiap X detik. Beri 50ms untuk waktu luang.
+  if (millis() % UPDATE_SENSOR_EVERY < 50) {
+    Sensor::update();
+  }
 }

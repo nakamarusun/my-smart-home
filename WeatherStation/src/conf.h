@@ -1,5 +1,5 @@
 // Semua disini bebas di ubah user.
-#define seaLevelPressure_hPa 1013.25
+#define UPDATE_SENSOR_EVERY 5 // Detik
 
 // Detail AP
 #define AP_SSID "WEATHER_STATION"
@@ -12,5 +12,5 @@
 #define CONNECT_TIMEOUT 30 // Timeout dalam detik untuk connect ke Wi-Fi
 
 // Pins
-#define DHT_PIN 3
-#define WET_PIN 1
+#define DHT_PIN 1
+#define WET_PIN 3
