@@ -19,12 +19,12 @@
 // Variabel server
 AsyncWebServer server(80);
 DNSServer dns;
- 
-void setup() {
 
-  // Sangat penting. Ini karena seringkali penalokasi i2c tidak
-  // otomatis di 0 dan 2.
-  Wire.begin(0, 2);
+void initWifi() {
+
+  // Reset semuanya dulu.
+  server.reset();
+  server.end();
 
   Serial.println("Initializing WiFi");
 
@@ -65,16 +65,32 @@ void setup() {
     Serial.println(MDNS_NAME);
   }
 
+  server.on("/json", HTTP_GET, HtmlResponder::dataQuery);
+  server.on("/status", HTTP_GET, HtmlResponder::status);
+
+  server.begin();
+}
+
+void sleepWifi() {
+  WiFi.disconnect();
+  WiFi.mode( WIFI_OFF );
+  WiFi.forceSleepBegin();
+}
+ 
+void setup() {
+
+  // Sangat penting. Ini karena seringkali penalokasi i2c tidak
+  // otomatis di 0 dan 2.
+  Wire.begin(0, 2);
+
+  // Init wifinya
+  initWifi();
+
   // Mulai semua sensor disini.
   Sensor::dht.begin();
   Sensor::bmp_status = Sensor::bmp.begin();
   Sensor::bh_status = Sensor::bh.begin(BH1750::Mode::ONE_TIME_HIGH_RES_MODE);
   Sensor::rns.begin();
-
-  server.on("/json", HTTP_GET, HtmlResponder::dataQuery);
-  server.on("/status", HTTP_GET, HtmlResponder::status);
-
-  server.begin();
 
   // Jangan pakai serial untuk project ini, karena semua pin terpakai.
   Serial.end();
@@ -86,6 +102,10 @@ bool marker = false;
 
 void loop() {
 
+  // delay(20000);
+  // WiFi.mode( WIFI_OFF );
+  // WiFi.forceSleepBegin();
+  
   // Update setiap X detik. Beri 50ms untuk waktu luang.
   if (millis() % UPDATE_SENSOR_EVERY < 50) {
 
@@ -94,4 +114,6 @@ void loop() {
   } else {
     marker = false;
   }
+
+  delay(25);
 }
