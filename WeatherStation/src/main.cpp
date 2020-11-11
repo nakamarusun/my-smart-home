@@ -1,3 +1,4 @@
+#include <LittleFS.h>
 #include <Arduino.h>
 
 #include <Wire.h>
@@ -22,6 +23,7 @@ DNSServer dns;
 
 // Variabel untuk update.
 long updateEvery = UPDATE_EVERY;
+bool initConfig = true;
 
 void initWifi() {
 
@@ -72,6 +74,9 @@ void initWifi() {
   server.on("/json", HTTP_GET, HtmlResponder::dataQuery);
   server.on("/status", HTTP_GET, HtmlResponder::status);
   server.on("/sleep", HTTP_GET, HtmlResponder::sleep);
+  server.on("/conf", HTTP_GET, HtmlResponder::conf);
+
+  server.onNotFound(HtmlResponder::fourOFour);
 
   server.begin();
 }
@@ -102,6 +107,14 @@ void setup() {
   // Sangat penting. Ini karena seringkali penalokasi i2c tidak
   // otomatis di 0 dan 2.
   Wire.begin(0, 2);
+
+  // Mulai LittleFS
+  LittleFS.begin();
+  if (!LittleFS.exists("/mqtt")) {
+    File file = LittleFS.open("/mqtt", "w");
+    file.flush();
+    file.close();
+  }
 
   // Init wifinya
   initWifi();

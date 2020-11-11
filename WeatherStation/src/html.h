@@ -1,3 +1,4 @@
+#include <LittleFS.h>
 #include <Arduino.h>
 
 // Library ESP
@@ -13,6 +14,8 @@
 #include <ArduinoJson.h> // Arduino json library
 
 #include "conf.h"
+#include "html_file.h"
+#include "util.h"
 
 bool willSleep = false;
 
@@ -66,9 +69,36 @@ namespace Sensor {
 // user.
 namespace HtmlResponder {
 
+    void fourOFour(AsyncWebServerRequest* request) {
+        request->send(200, "text/plain", "No bueno lol");
+    }
+
     void sleep(AsyncWebServerRequest* request) {
         request->send(200, "text/plain", "Sleeping...");
         willSleep = true;
+    }
+
+    void conf(AsyncWebServerRequest* request) {
+        AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", conf_html, [](const String& var) {
+
+            String result = "";
+
+            if (var == "CURRENT") {
+                result = Util::readFileAsString("/mqtt");
+                result = result.length() == 0 ? "Not Configured" : result;
+            }
+            return "";
+        });
+        request->send(response);
+    }
+
+    void confPost(AsyncWebServerRequest* request) {
+        if (request->hasParam("mqtt")) {
+            File file = LittleFS.open("/mqtt", "r");
+            file.print(request->getParam("mqtt")->value());
+            file.close();
+        }
+        request->redirect("/conf");
     }
 
     void status(AsyncWebServerRequest* request) {
