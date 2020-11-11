@@ -18,6 +18,10 @@
 #include "util.h"
 
 bool willSleep = false;
+// Variabel untuk waktu update.
+long updateEvery = UPDATE_EVERY;
+// Variabel untuk mencatat waktu awal config.
+unsigned long exitConfigMarker = millis() + (CONFIG_AVAILABLE_FROM * 1000);
 
 namespace Sensor {
 
@@ -86,6 +90,8 @@ namespace HtmlResponder {
             if (var == "CURRENT") {
                 result = Util::readFileAsString("/mqtt");
                 result = result.length() == 0 ? "Not Configured" : result;
+            } else if (var == "UPDATE_TIME") {
+                result = updateEvery;
             }
             return "";
         });
@@ -97,6 +103,10 @@ namespace HtmlResponder {
             File file = LittleFS.open("/mqtt", "r");
             file.print(request->getParam("mqtt")->value());
             file.close();
+        }
+        if (request->hasParam("time")) {
+            updateEvery = request->getParam("time")->value().toInt();
+            updateEvery = updateEvery == 0 ? updateEvery : UPDATE_EVERY;
         }
         request->redirect("/conf");
     }

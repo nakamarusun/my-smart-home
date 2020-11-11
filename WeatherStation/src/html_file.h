@@ -52,5 +52,11 @@ form {
     <input type="text" name="mqtt" placeholder="MQTT Broker server">
     <input type="submit" value="Submit">
 </form>
+<h1>Update Time(s): %UPDATE_TIME%s</h1>
+<form method="POST">
+    <div class="icon">⌚</div>
+    <input type="text" name="time" placeholder="Update every |X| second">
+    <input type="submit" value="Submit">
+</form>
 </body>
 )rawliteral";

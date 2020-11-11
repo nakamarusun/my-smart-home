@@ -21,8 +21,7 @@
 AsyncWebServer server(80);
 DNSServer dns;
 
-// Variabel untuk update.
-long updateEvery = UPDATE_EVERY;
+// Variabel jika masih dalam config.
 bool initConfig = true;
 
 void initWifi() {
@@ -129,13 +128,23 @@ void setup() {
   Serial.end();
 }
 
+void publishMQTT() {
+
+}
+
 void loop() {
   
-  // Update setiap X detik. Beri 50ms untuk waktu luang.
+  // Update semua sensornya.
   Sensor::update();
 
-  if (willSleep) {
-    lightSleep(updateEvery);
+  if (initConfig) {
+    // Masih didalam mode config
+    if (exitConfigMarker < millis()) {
+      initConfig = false;
+    }
+  } else {
+    // Diluar mode config
+    // Disini kita bisa update secara periodis ke server MQTT
   }
 
   delay(1);
