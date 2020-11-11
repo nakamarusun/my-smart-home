@@ -20,6 +20,9 @@
 AsyncWebServer server(80);
 DNSServer dns;
 
+// Variabel untuk update.
+long updateEvery = UPDATE_EVERY;
+
 void initWifi() {
 
   // Reset semuanya dulu.
@@ -29,6 +32,7 @@ void initWifi() {
   Serial.println("Initializing WiFi");
 
   // WiFi.disconnect();
+  WiFi.mode( WIFI_STA );
 
   // Bikin WiFiManager baru
   AsyncWiFiManager wifiManager(&server, &dns);
@@ -67,6 +71,7 @@ void initWifi() {
 
   server.on("/json", HTTP_GET, HtmlResponder::dataQuery);
   server.on("/status", HTTP_GET, HtmlResponder::status);
+  server.on("/sleep", HTTP_GET, HtmlResponder::sleep);
 
   server.begin();
 }
@@ -75,6 +80,21 @@ void sleepWifi() {
   WiFi.disconnect();
   WiFi.mode( WIFI_OFF );
   WiFi.forceSleepBegin();
+}
+
+void lightSleep(long milli) {
+
+  // Sleep code
+  wifi_set_opmode(NULL_MODE);
+  wifi_fpm_set_sleep_type(LIGHT_SLEEP_T);
+  wifi_fpm_open();
+  wifi_fpm_do_sleep(milli * 1000);
+  delay(milli + 1);
+
+  // Wake up code
+  willSleep = false;
+  wifi_set_sleep_type(NONE_SLEEP_T);
+  initWifi();
 }
  
 void setup() {
@@ -96,24 +116,14 @@ void setup() {
   Serial.end();
 }
 
-// Membantu agar sensor hanya mengupdate sekali saja
-// setiap UPDATE_SENSOR_EVERY.
-bool marker = false;
-
 void loop() {
-
-  // delay(20000);
-  // WiFi.mode( WIFI_OFF );
-  // WiFi.forceSleepBegin();
   
   // Update setiap X detik. Beri 50ms untuk waktu luang.
-  if (millis() % UPDATE_SENSOR_EVERY < 50) {
+  Sensor::update();
 
-    if (!marker) Sensor::update();
-    marker = true;
-  } else {
-    marker = false;
+  if (willSleep) {
+    lightSleep(updateEvery);
   }
 
-  delay(25);
+  delay(1);
 }

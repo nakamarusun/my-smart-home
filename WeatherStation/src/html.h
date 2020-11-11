@@ -14,6 +14,8 @@
 
 #include "conf.h"
 
+bool willSleep = false;
+
 namespace Sensor {
 
     struct RainSense {
@@ -63,6 +65,11 @@ namespace Sensor {
 // Html Responder untuk semua permintaan HTTP dari
 // user.
 namespace HtmlResponder {
+
+    void sleep(AsyncWebServerRequest* request) {
+        request->send(200, "text/plain", "Sleeping...");
+        willSleep = true;
+    }
 
     void status(AsyncWebServerRequest* request) {
 
