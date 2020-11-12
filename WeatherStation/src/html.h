@@ -61,10 +61,22 @@ namespace Sensor {
 
     void update() {
         pressure = Sensor::bmp_status ? Sensor::bmp.readPressure() : -1;
+
+        // Kadang kadang DHT tidak bisa dibuat koneksinya.
+        // Ini membuat aman, karena ada pengulangan.
         #ifndef SERIAL_DEBUG
-        temp = Sensor::dht.readTemperature();
-        heatIndex = Sensor::dht.computeHeatIndex(false);
-        humid = Sensor::dht.readHumidity();
+        // Dapatkan nilainya sampai tidak null.
+        int ind = 0;
+        while (true) {
+            temp = Sensor::dht.readTemperature();
+            heatIndex = Sensor::dht.computeHeatIndex(false);
+            humid = Sensor::dht.readHumidity();
+            if ((temp == NAN || humid == NAN) && ind < 5) {
+                dht.begin(100);
+                ind++;
+                delay(100);
+            } else break;
+        }
         #endif
         light = Sensor::bh_status ? Sensor::bh.readLightLevel() : -1;
         rain = Sensor::rns.readIsWet();

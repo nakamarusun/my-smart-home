@@ -212,17 +212,11 @@ void loop() {
   } else {
     // Diluar mode config
     // Disini kita bisa update secara periodis ke server MQTT
-    if (brokerMQTT.length() != 0) {
-      #ifndef SERIAL_DEBUG
-      // Untuk aman saja, soalnya suka mati sendiri
-      Sensor::dht.begin();
-      #endif
-      // Lakukan update MQTT
-      publishMQTT();
-      // Tidur.
-      lightSleep(updateEvery * 1000);
-    }
+    // Lakukan update MQTT
+    publishMQTT();
+    // Tidur.
+    lightSleep(updateEvery * 1000);
   }
 
-  delay(1);
+  delay(50);
 }

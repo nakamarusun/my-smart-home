@@ -1,7 +1,7 @@
 
 // Semua disini bebas di ubah user.
 #define UPDATE_EVERY 60 // Dalam detik (Nilai default)
-#define CONFIG_AVAILABLE_FROM 300 // Konfigurasi tersedia di awal mesin untuk 5 menit.
+#define CONFIG_AVAILABLE_FROM 180 // Konfigurasi tersedia di awal mesin untuk 5 menit.
 #define TOPIC_NAME "esp_weather"
 
 // Detail AP
