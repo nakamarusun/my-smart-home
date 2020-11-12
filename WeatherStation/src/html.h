@@ -61,9 +61,11 @@ namespace Sensor {
 
     void update() {
         pressure = Sensor::bmp_status ? Sensor::bmp.readPressure() : -1;
+        #ifndef SERIAL_DEBUG
         temp = Sensor::dht.readTemperature();
         heatIndex = Sensor::dht.computeHeatIndex(false);
         humid = Sensor::dht.readHumidity();
+        #endif
         light = Sensor::bh_status ? Sensor::bh.readLightLevel() : -1;
         rain = Sensor::rns.readIsWet();
     }

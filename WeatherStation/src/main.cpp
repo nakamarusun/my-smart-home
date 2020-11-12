@@ -97,7 +97,9 @@ void sleepWifi() {
 
 void lightSleep(long milli) {
 
+  Serial.println("Going to sleep...");
   // Sleep code
+  wifi_station_disconnect();
   wifi_set_opmode(NULL_MODE);
   wifi_fpm_set_sleep_type(LIGHT_SLEEP_T);
   wifi_fpm_open();
@@ -107,6 +109,7 @@ void lightSleep(long milli) {
   // Wake up code
   willSleep = false;
   wifi_set_sleep_type(NONE_SLEEP_T);
+  Serial.println("Waking up");
   initWifi();
 }
  
@@ -116,7 +119,9 @@ void setup() {
   // otomatis di 0 dan 2.
   Wire.begin(0, 2);
 
-  // Serial.begin(9600); // Hanya untuk debug!
+  #ifdef SERIAL_DEBUG
+  Serial.begin(9600); // Hanya untuk debug!
+  #endif
 
   // Mulai LittleFS
   LittleFS.begin();
@@ -137,7 +142,9 @@ void setup() {
   Sensor::rns.begin();
 
   // Jangan pakai serial untuk project ini, karena semua pin terpakai.
+  #ifndef SERIAL_DEBUG
   Serial.end();
+  #endif
   Serial.println("Server started!");
 }
 
@@ -177,8 +184,11 @@ void publishMQTT() {
       // Kemudian send.
       client.publish(TOPIC_NAME, result.c_str());
 
+      // Tunggu sampai semua datanya disend.
+      delay(1000);
       client.loop();
-      delay(2000);
+      delay(1000);
+      Serial.println("Done sending MQTT");
 
       // Kalau terkoneksi, keluar dari loop.
       break;
@@ -203,8 +213,13 @@ void loop() {
     // Diluar mode config
     // Disini kita bisa update secara periodis ke server MQTT
     if (brokerMQTT.length() != 0) {
+      #ifndef SERIAL_DEBUG
+      // Untuk aman saja, soalnya suka mati sendiri
+      Sensor::dht.begin();
+      #endif
       // Lakukan update MQTT
       publishMQTT();
+      // Tidur.
       lightSleep(updateEvery * 1000);
     }
   }

@@ -1,6 +1,6 @@
 
 // Semua disini bebas di ubah user.
-#define UPDATE_EVERY 10 // Dalam detik
+#define UPDATE_EVERY 60 // Dalam detik (Nilai default)
 #define CONFIG_AVAILABLE_FROM 300 // Konfigurasi tersedia di awal mesin untuk 5 menit.
 #define TOPIC_NAME "esp_weather"
 
@@ -17,3 +17,5 @@
 // Pins
 #define DHT_PIN 1
 #define WET_PIN 3
+
+// #define SERIAL_DEBUG // Hanya untuk debug.
