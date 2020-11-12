@@ -1,8 +1,28 @@
 const char conf_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
+<html>
 <head>
 <title>Weather Station Configuration</title>
-<style>
+<link rel="stylesheet" href="/style">
+</head>
+<body>
+<h1>MQTT Server: %CURRENT%</h1>
+<form method="POST">
+    <div class="icon">💻</div>
+    <input type="text" name="mqtt" placeholder="MQTT Broker server">
+    <input type="submit" value="Submit">
+</form>
+<h1>Update Time(s): %UPDATE_TIME%s</h1>
+<form method="POST">
+    <div class="icon">⌚</div>
+    <input type="text" name="time" placeholder="Update every |X| second">
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+)rawliteral";
+
+const char style_html[] PROGMEM = R"rawliteral(
 h1 {
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
@@ -42,21 +62,4 @@ form .icon {
 form {
     display: flex;
 }
-</style>
-</head>
-
-<body>
-<h1>MQTT Server: %CURRENT%</h1>
-<form method="POST">
-    <div class="icon">💻</div>
-    <input type="text" name="mqtt" placeholder="MQTT Broker server">
-    <input type="submit" value="Submit">
-</form>
-<h1>Update Time(s): %UPDATE_TIME%s</h1>
-<form method="POST">
-    <div class="icon">⌚</div>
-    <input type="text" name="time" placeholder="Update every |X| second">
-    <input type="submit" value="Submit">
-</form>
-</body>
 )rawliteral";

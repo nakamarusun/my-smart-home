@@ -82,6 +82,11 @@ namespace HtmlResponder {
         willSleep = true;
     }
 
+    void style(AsyncWebServerRequest* request) {
+        AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", style_html);
+        request->send(response);
+    }
+
     void conf(AsyncWebServerRequest* request) {
         AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", conf_html, [](const String& var) {
 
@@ -93,22 +98,35 @@ namespace HtmlResponder {
             } else if (var == "UPDATE_TIME") {
                 result = updateEvery;
             }
-            return "";
+            return result;
         });
         request->send(response);
     }
 
+    void mqtt(AsyncWebServerRequest* request) {
+        request->send(LittleFS, "/mqtt","text/plain");
+    }
+
     void confPost(AsyncWebServerRequest* request) {
-        if (request->hasParam("mqtt")) {
-            File file = LittleFS.open("/mqtt", "r");
-            file.print(request->getParam("mqtt")->value());
+
+        if (request->hasParam("mqtt", true)) {
+            File file = LittleFS.open("/mqtt", "w");
+            file.print(request->getParam("mqtt", true)->value());
+            file.flush();
             file.close();
         }
-        if (request->hasParam("time")) {
-            updateEvery = request->getParam("time")->value().toInt();
-            updateEvery = updateEvery == 0 ? updateEvery : UPDATE_EVERY;
+        if (request->hasParam("time", true)) {
+            updateEvery = request->getParam("time", true)->value().toInt();
+            updateEvery = updateEvery == 0 ? UPDATE_EVERY : updateEvery;
+
+            // Masukkan ke file.
+            File file = LittleFS.open("/updateTime", "w");
+            file.print(updateEvery);
+            file.flush();
+            file.close();
         }
         request->redirect("/conf");
+        // request->send(200, "text/plain", "Done.");
     }
 
     void status(AsyncWebServerRequest* request) {

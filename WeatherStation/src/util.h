@@ -16,4 +16,12 @@ namespace Util {
 
         return result;
     }
+
+    void createIfNotExist(String filename) {
+          if (!LittleFS.exists(filename)) {
+            File file = LittleFS.open(filename, "w");
+            file.flush();
+            file.close();
+        }
+    }
 }
