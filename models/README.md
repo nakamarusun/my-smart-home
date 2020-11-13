@@ -2,8 +2,8 @@
 
 ## Circuit
 
-![WeatherStationCircuit](/WeatherStationCircuit.jpg)
+![WeatherStationCircuit](models/WeatherStationCircuit.jpg)
 
 ## 3D Model
 
-![WeatherStation](/WeatherStation.png)
+![WeatherStation](models/WeatherStation.png)
