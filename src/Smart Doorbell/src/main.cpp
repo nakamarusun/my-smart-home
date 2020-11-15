@@ -1,3 +1,4 @@
+#include <SPIFFS.h> // HARUS PALING ATAS
 #include <Arduino.h>
 #include <esp32cam.h>
 
@@ -14,10 +15,18 @@
 
 #include "conf.h"
 #include "html.h"
+#include "util.h"
+
 void setup() {
 
   // Mulai serial
   Serial.begin(9600);
+
+  // Mulai SPIFFS;
+  if (!SPIFFS.begin(true)) {
+    Serial.println("Gagal menginisialisasi SPIFFS, mengformat...");
+  }
+  Util::createIfNotExist("/brokerhost");
 
   Serial.println("Initializing WiFi");
 
@@ -25,6 +34,7 @@ void setup() {
 
   // Bikin WiFiManager baru
   WiFiManager wifiManager;
+  wifiManager.setDebugOutput(false);
 
   // Disini kita bisa set timeout ketika ESP tidak di setting
   // dalam jangka waktu yang ditentukan, bisa coba connect ke wi-fi lagi.
@@ -69,7 +79,6 @@ void setup() {
 
     bool ok = Camera.begin(cfg);
     Serial.println(ok ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
-    Serial.println("Bruh?");
   }
 
   // Mulai servernya
