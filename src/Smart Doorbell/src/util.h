@@ -1,6 +1,8 @@
 #pragma once
-
+#include <Arduino.h>
 #include <SPIFFS.h>
+#include <PubSubClient.h>
+#include <WiFi.h>
 
 namespace Util {
     String readFileAsString(String filename) {
@@ -25,3 +27,27 @@ namespace Util {
         }
     }
 }
+
+struct Btn {
+    bool curState;
+    bool lastState;
+    int pin;
+    Btn(int pin): curState(false), lastState(false), pin(pin) {}
+
+    // Harus ada di setiap loop.
+    void updateButton() {
+        lastState = curState;
+        curState = digitalRead(pin);
+    }
+
+    // Cek tombolnya jika ditekan HANYA SEKALI.
+    bool checkButtonOnce() {
+        return (curState == true && lastState == false);
+    }
+
+    // Cek tombolnya jika ditekan.
+    bool checkButton() {
+        return curState;
+    }
+    
+};

@@ -3,6 +3,9 @@ Semua yang ada di file ini dapat diganti
 ke kemauan hatimu~
 */
 
+// Menyalakan mode serial.
+#define DEBUG_MODE
+
 // Detail AP
 #define AP_SSID "SMART_DOORBELL"
 #define AP_PASS "password"
@@ -12,3 +15,13 @@ ke kemauan hatimu~
 #define AP_TIMEOUT 60 // Timeout dalam detik membuka mode AP
 
 #define CONNECT_TIMEOUT 30 // Timeout dalam detik untuk connect ke Wi-Fi
+
+// Detail pins
+#define SDA_PIN 16
+#define SCL_PIN 0
+
+#define PROX_PIN 3
+#define BTN_PIN 1
+
+// Pub/Sub names
+#define BTN_TOPIC "doorbell/button"

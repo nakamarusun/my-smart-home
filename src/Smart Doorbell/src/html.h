@@ -19,6 +19,12 @@ namespace HttpServer {
     WebServer server(80);
     DNSServer dns;
 
+    // Untuk MQTT
+    int reconTimeTry = 2000;
+    long lastReconTime;
+    WiFiClient espClient;
+    PubSubClient mqtt(espClient);
+
     void handleCapture() {
         auto frame = esp32cam::capture();
             if (frame == nullptr) {
@@ -57,24 +63,12 @@ namespace HttpServer {
     }
     
     void handleBrokerstatus() {
-        WiFiClient espClient;
-        PubSubClient client(espClient);
-        const int REPEAT = 10;
         
-        // Broker MQTT
-        String str = Util::readFileAsString("/brokerhost");
-        if (str.length() != 0) {
-            client.setServer(Util::readFileAsString("/brokerhost").c_str(), 1883);
-
-            for (int i = 0; i < REPEAT; i++) {
-                if (client.connect(MDNS_NAME)) {
-                    server.send(200, "text/plain", "Connection successfully made!");
-                    return;
-                }
-                delay(100);
-            }
+        if (mqtt.connected()) {
+            server.send(200, "text/plain", "Connection successfully made!");
+        } else {
+            server.send(200, "text/plain", "Failed to make connection.");
         }
-        server.send(200, "text/plain", "Failed to make connection.");
     }
 
     void fourOFour() {
@@ -89,7 +83,22 @@ namespace HttpServer {
         server.on("/brokerhost", HTTP_GET, handleBrokerhost);
         server.on("/brokerstatus", HTTP_GET, handleBrokerstatus);
         server.onNotFound(fourOFour);
+        
+        // Setel server koneksi MQTT.
+        mqtt.setServer(Util::readFileAsString("/brokerhost").c_str(), 1883);
 
         server.begin();
+    }
+
+    void mqttLoop() {
+        if (!mqtt.connected()) {
+            if (lastReconTime + reconTimeTry < millis()) {
+                Serial.println("MQTT not connected.. Reconnecting..");
+                mqtt.connect(MDNS_NAME);
+                lastReconTime = millis();
+            }
+        } else {
+            mqtt.loop();
+        }
     }
 }

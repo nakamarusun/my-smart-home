@@ -17,10 +17,20 @@
 #include "html.h"
 #include "util.h"
 
+Btn doorbell(BTN_PIN);
+
+void publishDoorbell() {
+  // Akan mengpublish message di topik
+  // jika tombol bel ditekan.
+  HttpServer::mqtt.publish(BTN_TOPIC, "1");
+}
+
 void setup() {
 
+  #ifdef DEBUG_MODE
   // Mulai serial
   Serial.begin(9600);
+  #endif
 
   // Mulai SPIFFS;
   if (!SPIFFS.begin(true)) {
@@ -83,10 +93,22 @@ void setup() {
 
   // Mulai servernya
   HttpServer::initServer();
+  // HttpServer::mqtt.connect();
 
   Serial.println("Semua sistem sukses di inisialisasi!");
+  #ifndef DEBUG_MODE
+  Serial.end();
+  #endif
 }
 
 void loop() {
+  // Lakukan setiap loop
   HttpServer::server.handleClient();
+
+  // Untuk MQTT loop
+  HttpServer::mqttLoop();
+
+  // Cek tombolnya
+  doorbell.updateButton();
+  if (doorbell.checkButtonOnce()) { publishDoorbell(); }
 }
