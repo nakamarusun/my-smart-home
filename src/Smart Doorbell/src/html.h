@@ -13,6 +13,7 @@
 #include "conf.h"
 #include "html_file.h"
 #include "util.h"
+#include "lcd.h"
 
 namespace HttpServer {
     // Variable server
@@ -46,12 +47,23 @@ namespace HttpServer {
     }
 
     void handleIndexPost() {
-        // Ubah broker MQTT.
+        // Ubah broker di file dan di memori MQTT.
         if (server.hasArg("mqtt")) {
             File file = SPIFFS.open("/brokerhost", "w");
             file.print(server.arg("mqtt"));
             file.flush();
             file.close();
+
+            // Ubah broker MQTT
+            mqtt.setServer(server.arg("mqtt").c_str(), 1883);
+        }
+        if (server.hasArg("text")) {
+            File file = SPIFFS.open("/message", "w");
+            file.print(server.arg("text"));
+            file.flush();
+            file.close();
+
+            LCD::updateLcd();
         }
         server.sendHeader("Location", String("/"), true);
         server.send (302, "text/plain", "");

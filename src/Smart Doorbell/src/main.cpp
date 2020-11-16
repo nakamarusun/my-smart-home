@@ -13,11 +13,16 @@
 #include <DNSServer.h>
 #include <WiFiManager.h>
 
+#include <Wire.h>
+#include <SSD1306Wire.h>
+
 #include "conf.h"
 #include "html.h"
 #include "util.h"
+#include "lcd.h"
 
 Btn doorbell(BTN_PIN);
+
 
 void publishDoorbell() {
   // Akan mengpublish message di topik
@@ -32,11 +37,19 @@ void setup() {
   Serial.begin(9600);
   #endif
 
+  // Mulai LED display
+  LCD::display.init();
+  LCD::display.clear();
+  LCD::display.drawXbm(0, 0, 128, 64, LCD::splashLogo);
+  LCD::display.display();
+
   // Mulai SPIFFS;
   if (!SPIFFS.begin(true)) {
     Serial.println("Gagal menginisialisasi SPIFFS, mengformat...");
   }
+  // Buat imagenya semua
   Util::createIfNotExist("/brokerhost");
+  Util::createIfNotExist("/message");
 
   Serial.println("Initializing WiFi");
 
@@ -99,6 +112,7 @@ void setup() {
   #ifndef DEBUG_MODE
   Serial.end();
   #endif
+  LCD::display.clear();
 }
 
 void loop() {
