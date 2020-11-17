@@ -4,7 +4,7 @@ ke kemauan hatimu~
 */
 
 // Menyalakan mode serial.
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // Detail AP
 #define AP_SSID "SMART_DOORBELL"
@@ -25,3 +25,4 @@ ke kemauan hatimu~
 
 // Pub/Sub names
 #define BTN_TOPIC "doorbell/button"
+#define PROX_TOPIC "doorbell/prox"

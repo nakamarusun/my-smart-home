@@ -90,7 +90,7 @@ const char index_html[] = R"rawliteral(
     <input type="text" name="mqtt" placeholder="New MQTT Broker Server">
     <input type="submit" value="Submit">
 </form>
-<form method="POST">
+<form method="POST" style="margin-top: 50px">
     <div class="icon">></div>
     <input type="text" name="text" placeholder="Enter display text">
     <input type="submit" value="Submit">

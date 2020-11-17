@@ -26,6 +26,8 @@ namespace HttpServer {
     WiFiClient espClient;
     PubSubClient mqtt(espClient);
 
+    String brokerStr;
+
     void handleCapture() {
         auto frame = esp32cam::capture();
             if (frame == nullptr) {
@@ -55,14 +57,17 @@ namespace HttpServer {
             file.close();
 
             // Ubah broker MQTT
+            Serial.print("Changing broker server as: ");
+            Serial.println(server.arg("mqtt").c_str());
             mqtt.setServer(server.arg("mqtt").c_str(), 1883);
+            mqtt.connect(MDNS_NAME);
         }
         if (server.hasArg("text")) {
             File file = SPIFFS.open("/message", "w");
             file.print(server.arg("text"));
             file.flush();
             file.close();
-
+            LCD::displayText = server.arg("text");
             LCD::updateLcd();
         }
         server.sendHeader("Location", String("/"), true);
@@ -83,6 +88,10 @@ namespace HttpServer {
         }
     }
 
+    void handleDisplayText() {
+        server.send(200, "text/plain", Util::readFileAsString("/message"));
+    }
+
     void fourOFour() {
         server.send(404, "text/plain", "No bueno lol");
     }
@@ -93,11 +102,11 @@ namespace HttpServer {
         server.on("/", HTTP_POST, handleIndexPost);
         server.on("/capture", HTTP_GET, handleCapture);
         server.on("/brokerhost", HTTP_GET, handleBrokerhost);
+        server.on("/displaytext", HTTP_GET, handleDisplayText);
         server.on("/brokerstatus", HTTP_GET, handleBrokerstatus);
         server.onNotFound(fourOFour);
-        
-        // Setel server koneksi MQTT.
-        mqtt.setServer(Util::readFileAsString("/brokerhost").c_str(), 1883);
+
+        brokerStr = Util::readFileAsString("/brokerhost").c_str();
 
         server.begin();
     }
@@ -106,11 +115,15 @@ namespace HttpServer {
         if (!mqtt.connected()) {
             if (lastReconTime + reconTimeTry < millis()) {
                 Serial.println("MQTT not connected.. Reconnecting..");
-                mqtt.connect(MDNS_NAME);
+                mqtt.setServer(brokerStr.c_str(), 1883);
+                if (mqtt.connect(MDNS_NAME)) {
+                    Serial.println("Connected to broker!");
+                } else {
+                    Serial.println("Failed to connect to broker..");
+                }
                 lastReconTime = millis();
             }
-        } else {
-            mqtt.loop();
         }
+        mqtt.loop();
     }
 }

@@ -22,7 +22,7 @@
 #include "lcd.h"
 
 Btn doorbell(BTN_PIN);
-
+Btn proxSensor(PROX_PIN);
 
 void publishDoorbell() {
   // Akan mengpublish message di topik
@@ -37,11 +37,26 @@ void setup() {
   Serial.begin(9600);
   #endif
 
+  using namespace LCD;
   // Mulai LED display
-  LCD::display.init();
-  LCD::display.clear();
-  LCD::display.drawXbm(0, 0, 128, 64, LCD::splashLogo);
-  LCD::display.display();
+  display.init();
+  display.flipScreenVertically();
+
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_16);
+  display.drawStringMaxWidth(0, 0, 128, "Booting...");
+  display.display();
+  delay(2000);
+
+  display.clear();
+  display.drawXbm(0, 0, 128, 64, splashLogo);
+  display.display();
+  delay(2000);
+
+  display.clear();
+  display.drawStringMaxWidth(0, 0, 128, "Welcome to the system!");
+  display.display();
 
   // Mulai SPIFFS;
   if (!SPIFFS.begin(true)) {
@@ -68,6 +83,7 @@ void setup() {
   // Disini kita bisa menentukan apa nama dan password device kita
   // untuk bisa membantu dia berhubung ke Wi-Fi yang kita inginkan
   // Lakukan loop sampai koneksi dibuat.
+  WiFi.mode(WIFI_STA);
   do {
 
     connected = wifiManager.autoConnect(AP_SSID, AP_PASS);
@@ -106,14 +122,23 @@ void setup() {
 
   // Mulai servernya
   HttpServer::initServer();
-  // HttpServer::mqtt.connect();
+  
+  // Buffer LCD disini jadi error gak tau kenapa...
+  // Jadi harus di init lagi.
+  display.init();
+  display.flipScreenVertically();
+  loadLcdText();
+  updateLcd();
 
   Serial.println("Semua sistem sukses di inisialisasi!");
   #ifndef DEBUG_MODE
   Serial.end();
   #endif
-  LCD::display.clear();
 }
+
+long proxLast;
+bool proxTriggered = false;
+const int proxLength = 5000; // Berapa lama proximity aktif baru mengesend data.
 
 void loop() {
   // Lakukan setiap loop
@@ -124,5 +149,39 @@ void loop() {
 
   // Cek tombolnya
   doorbell.updateButton();
-  if (doorbell.checkButtonOnce()) { publishDoorbell(); }
+  proxSensor.updateButton();
+  if (doorbell.checkButtonOnce()) { 
+    publishDoorbell(); 
+    LCD::updateLcd();
+  }
+
+  // Update PIR proximity sensornya
+  /*
+  Snippet kode ini berguna untuk meng-publish pesan
+  jika sensornya aktif selama X detik. Setelah mengpublish,
+  Sensor akan direset agar tidak terjadi spam.
+  */
+  if (proxSensor.checkButton()) {
+    if (!proxTriggered) {
+      // Jika baru pertama kali ketrigger,
+      // Catat waktu ke triggernya
+      proxLast = millis();
+      proxTriggered = true;
+    } else {
+      // Disini akan dicatat sudah berapa lama ke trigger.
+      if (proxLast + proxLength < millis()) {
+        LCD::updateLcd();
+        Serial.println("Proximity triggered!");
+        HttpServer::mqtt.publish(PROX_TOPIC, "1");
+        proxTriggered = false;
+      }
+    }
+  } else {
+    // Matikan trigger dan reset waktu.
+    proxTriggered = false;
+    proxLast = 0;
+  }
+
+  // Loop LCDnya.
+  LCD::lcdLoop();
 }

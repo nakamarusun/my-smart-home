@@ -32,12 +32,14 @@ struct Btn {
     bool curState;
     bool lastState;
     int pin;
-    Btn(int pin): curState(false), lastState(false), pin(pin) {}
+    Btn(int pin): curState(false), lastState(false), pin(pin) {
+        pinMode(pin, INPUT);
+    }
 
     // Harus ada di setiap loop.
     void updateButton() {
         lastState = curState;
-        curState = digitalRead(pin);
+        curState = digitalRead(pin) == HIGH ? true : false;
     }
 
     // Cek tombolnya jika ditekan HANYA SEKALI.
