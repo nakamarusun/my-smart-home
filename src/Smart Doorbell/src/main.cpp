@@ -107,6 +107,9 @@ void setup() {
     Serial.println(MDNS_NAME);
   }
 
+  loadLcdText();
+  updateLcd();
+
   // Init kameranya dan beri konfigurasi yang sesuai.
   {
     using namespace esp32cam;
@@ -116,8 +119,8 @@ void setup() {
     cfg.setBufferCount(3);
     cfg.setJpeg(95);
 
-    bool ok = Camera.begin(cfg);
-    Serial.println(ok ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
+    HttpServer::cameraStatus = Camera.begin(cfg);
+    Serial.println(HttpServer::cameraStatus ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
   }
 
   // Mulai servernya
@@ -125,20 +128,14 @@ void setup() {
   
   // Buffer LCD disini jadi error gak tau kenapa...
   // Jadi harus di init lagi.
-  display.init();
-  display.flipScreenVertically();
-  loadLcdText();
-  updateLcd();
+  // display.init();
+  // display.flipScreenVertically();
 
   Serial.println("Semua sistem sukses di inisialisasi!");
   #ifndef DEBUG_MODE
   Serial.end();
   #endif
 }
-
-long proxLast;
-bool proxTriggered = false;
-const int proxLength = 5000; // Berapa lama proximity aktif baru mengesend data.
 
 void loop() {
   // Lakukan setiap loop
@@ -161,25 +158,10 @@ void loop() {
   jika sensornya aktif selama X detik. Setelah mengpublish,
   Sensor akan direset agar tidak terjadi spam.
   */
-  if (proxSensor.checkButton()) {
-    if (!proxTriggered) {
-      // Jika baru pertama kali ketrigger,
-      // Catat waktu ke triggernya
-      proxLast = millis();
-      proxTriggered = true;
-    } else {
-      // Disini akan dicatat sudah berapa lama ke trigger.
-      if (proxLast + proxLength < millis()) {
-        LCD::updateLcd();
-        Serial.println("Proximity triggered!");
-        HttpServer::mqtt.publish(PROX_TOPIC, "1");
-        proxTriggered = false;
-      }
-    }
-  } else {
-    // Matikan trigger dan reset waktu.
-    proxTriggered = false;
-    proxLast = 0;
+  if (proxSensor.checkButtonOnce()) {
+    LCD::updateLcd();
+    Serial.println("Proximity triggered!");
+    HttpServer::mqtt.publish(PROX_TOPIC, "1");
   }
 
   // Loop LCDnya.

@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.html": "django-html",
-        "functional": "cpp"
+        "functional": "cpp",
+        "random": "cpp",
+        "limits": "cpp"
     }
 }

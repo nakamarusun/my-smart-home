@@ -28,11 +28,26 @@ namespace HttpServer {
 
     String brokerStr;
 
+    bool cameraStatus;
+
     void handleCapture() {
+        
+        if (!cameraStatus) {
+            using namespace esp32cam;
+            Config cfg;
+            cfg.setPins(pins::AiThinker);
+            cfg.setResolution(Resolution::find(800, 600));
+            cfg.setBufferCount(3);
+            cfg.setJpeg(95);
+
+            cameraStatus = Camera.begin(cfg);
+            Serial.println(cameraStatus ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
+        }
+
         auto frame = esp32cam::capture();
             if (frame == nullptr) {
             Serial.println("CAPTURE FAIL");
-            server.send(503, "", "");
+            server.send(503, "text/plain", "Failed to capture.");
             return;
         }
         Serial.printf("CAPTURE OK %dx%d %db\n", frame->getWidth(), frame->getHeight(),
