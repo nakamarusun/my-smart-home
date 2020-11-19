@@ -17,11 +17,11 @@ ke kemauan hatimu~
 #define CONNECT_TIMEOUT 30 // Timeout dalam detik untuk connect ke Wi-Fi
 
 // Detail pins
-#define SDA_PIN 16
-#define SCL_PIN 0
+#define SDA_PIN 3
+#define SCL_PIN 1
 
-#define PROX_PIN 3
-#define BTN_PIN 1
+#define PROX_PIN 16
+#define BTN_PIN 15
 
 // Pub/Sub names
 #define BTN_TOPIC "doorbell/button"

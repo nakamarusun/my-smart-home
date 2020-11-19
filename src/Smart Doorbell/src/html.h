@@ -5,7 +5,7 @@
 #include <DNSServer.h>
 
 // Kamera
-#include <esp32cam.h>
+#include <esp_camera.h>
 
 // MQTT
 #include <PubSubClient.h>
@@ -33,30 +33,27 @@ namespace HttpServer {
     void handleCapture() {
         
         if (!cameraStatus) {
-            using namespace esp32cam;
-            Config cfg;
-            cfg.setPins(pins::AiThinker);
-            cfg.setResolution(Resolution::find(800, 600));
-            cfg.setBufferCount(3);
-            cfg.setJpeg(95);
-
-            cameraStatus = Camera.begin(cfg);
-            Serial.println(cameraStatus ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
+            server.send(200, "text/plain", "Camera sensor error!");
         }
 
-        auto frame = esp32cam::capture();
-            if (frame == nullptr) {
-            Serial.println("CAPTURE FAIL");
-            server.send(503, "text/plain", "Failed to capture.");
-            return;
-        }
-        Serial.printf("CAPTURE OK %dx%d %db\n", frame->getWidth(), frame->getHeight(),
-                    static_cast<int>(frame->size()));
+        // auto frame = esp32cam::capture();
+        //     if (frame == nullptr) {
+        //     Serial.println("CAPTURE FAIL");
+        //     server.send(503, "text/plain", "Failed to capture.");
+        //     return;
+        // }
+        // Serial.printf("CAPTURE OK %dx%d %db\n", frame->getWidth(), frame->getHeight(),
+        //             static_cast<int>(frame->size()));
 
-        server.setContentLength(frame->size());
-        server.send(200, "image/jpeg");
-        WiFiClient client = server.client();
-        frame->writeTo(client);
+        // server.setContentLength(frame->size());
+        // server.send(200, "image/jpeg");
+        // WiFiClient client = server.client();
+        // frame->writeTo(client);
+        camera_fb_t* frame = NULL;
+        frame = esp_camera_fb_get();
+
+        server.send_P(200, "image/jpeg", (const char *)frame->buf, frame->len);
+        esp_camera_fb_return(frame); // TEST WITH THIS PLEASE
     }
 
     void handleIndex() {

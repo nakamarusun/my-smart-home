@@ -102,6 +102,9 @@ namespace LCD {
 
 	// Update lcd dengan teks dari flash memory.
 	void updateLcd() {
+		// camera_fb_t* frame = NULL;
+        // frame = esp_camera_fb_get();
+        
 		display.displayOn();
 		display.clear();
 		display.setTextAlignment(TEXT_ALIGN_LEFT);
@@ -113,6 +116,7 @@ namespace LCD {
 		// Setel LCDnya agar mati nanti.
 		visible = true;
 		onUntil = millis() + onDuration;
+        // esp_camera_fb_return(frame); // TEST WITH THIS PLEASE
 	}
 
 	void loadLcdText() {

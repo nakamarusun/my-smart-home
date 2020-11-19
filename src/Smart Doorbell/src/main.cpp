@@ -1,6 +1,5 @@
 #include <SPIFFS.h> // HARUS PALING ATAS
 #include <Arduino.h>
-#include <esp32cam.h>
 
 // Library ESP
 #include <ESPmDNS.h>
@@ -20,6 +19,7 @@
 #include "html.h"
 #include "util.h"
 #include "lcd.h"
+#include "cam.h"
 
 Btn doorbell(BTN_PIN);
 Btn proxSensor(PROX_PIN);
@@ -111,17 +111,8 @@ void setup() {
   updateLcd();
 
   // Init kameranya dan beri konfigurasi yang sesuai.
-  {
-    using namespace esp32cam;
-    Config cfg;
-    cfg.setPins(pins::AiThinker);
-    cfg.setResolution(Resolution::find(800, 600));
-    cfg.setBufferCount(3);
-    cfg.setJpeg(95);
-
-    HttpServer::cameraStatus = Camera.begin(cfg);
-    Serial.println(HttpServer::cameraStatus ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
-  }
+  HttpServer::cameraStatus = Cam::initCamera();
+  Serial.println(HttpServer::cameraStatus ? "Kamera berhasil di aktifkan" : "Kamera gagal diaktifkan.");
 
   // Mulai servernya
   HttpServer::initServer();
@@ -134,6 +125,7 @@ void setup() {
   Serial.println("Semua sistem sukses di inisialisasi!");
   #ifndef DEBUG_MODE
   Serial.end();
+  Serial.setDebugOutput(false);
   #endif
 }
 
