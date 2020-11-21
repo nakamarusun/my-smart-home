@@ -1,0 +1,77 @@
+@font-face {
+    font-family: CascadiaCode;
+    src: url(CascadiaCode.ttf);
+}
+@font-face {
+    font-family: SourceSansPro;
+    font-weight: normal;
+    src: url(SourceSansPro-Regular.ttf);
+}
+@font-face {
+    font-family: SourceSansPro;
+    font-weight: bold;
+    src: url(SourceSansPro-Bold.ttf);
+}
+@font-face {
+    font-family: SourceSansPro;
+    font-weight: 200;
+    src: url(SourceSansPro-Light.ttf);
+}
+@font-face {
+    font-family: SourceSansPro;
+    font-style: italic;
+    src: url(SourceSansPro-Italic.ttf);
+}
+
+.ctr {text-align: center;}
+.nomgn {margin: 0px;}
+
+h1 {
+    font-family: SourceSansPro;
+    font-weight: normal;
+    letter-spacing: -0.03em;
+}
+
+h2 {
+    font-family: SourceSansPro;
+    font-weight: normal;
+    color: rgb(131, 131, 131);
+}
+
+.main_content {
+    margin: auto;
+    max-width: 800px;
+}
+
+.main_box {
+    margin-top: 50px;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgb(160, 160, 160);
+    border-top: none;
+    border-bottom: none;
+    border-radius: 20px;
+}
+
+.main_box .box {
+    margin: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+canvas[id="weather_num"] {
+    width: 250px;
+}
+
+canvas[id="weather_graph"] {
+    width: 100%;
+}
