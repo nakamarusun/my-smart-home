@@ -1,0 +1,6 @@
+{
+    "MYSQL_HOST": "localhost",
+    "MYSQL_USER": "<CHANGETHIS>",
+    "MYSQL_PASSWORD": "<CHANGETHIS>",
+    "MYSQL_DB": "smarthomeserver"
+}
