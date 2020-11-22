@@ -2,7 +2,7 @@ from flask import (Flask, render_template)
 from flask_mysqldb import MySQL
 from os import environ, makedirs
 from SmartHomeServer.controllers import index, data_getter
-from SmartHomeServer import uncache, db
+from SmartHomeServer import uncache, db, mqtt
 
 def create_app():
 
@@ -16,6 +16,9 @@ def create_app():
     # Mulai database
     db.init_db(app)
     app.cli.add_command(db.init_db_cli)
+
+    # Mulai mqtt
+    mqtt.init_mqtt(app)
 
     # Buat semua rutenya.
     index.init_index(app)

@@ -29,7 +29,7 @@ def all_data():
     str_max = datetime.datetime.fromtimestamp(max_range).strftime('%Y-%m-%d %H:%M:%S')
 
     # Dapatkan berapa banyak data yang ada di kurung waktu yang diberikan.
-    cursor.execute("SELECT COUNT(*) FROM weather WHERE get_time BETWEEN \"{}\" AND \"{}\";".format(str_min, str_max))
+    cursor.execute("SELECT COUNT(*) FROM weather WHERE get_time BETWEEN %s AND %s;", (str_min, str_max))
     data_count = cursor.fetchall()[0][0]
 
     # Format jsonnya
@@ -55,7 +55,6 @@ def all_data():
 
         data = raw_data[floor(i)]
         # Masukkan semua data ke dictionary
-        print(data[0].timestamp())
         data_dict["get_time"].append(data[0].timestamp())
         data_dict["temp"].append(data[1])
         data_dict["hindex"].append(data[2])
@@ -66,4 +65,4 @@ def all_data():
 
         i += inc
     
-    return Response(json.dumps(data_dict), mimetype="application/json")
+    return Response(json.dumps(data_dict, separators=(',', ':')), mimetype="application/json")
