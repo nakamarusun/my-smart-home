@@ -59,8 +59,10 @@ h2 {
     margin: auto;
     display: flex;
     flex-wrap: nowrap;
-    width: 100%;
 }
+
+.main_box .box .row {flex-direction: row;}
+.main_box .box .column {flex-direction: column;}
 
 img {
     max-width: 100%;
@@ -69,9 +71,41 @@ img {
 }
 
 canvas[id="weather_num"] {
-    width: 250px;
+    width: 100px;
 }
 
 canvas[id="weather_graph"] {
+    width: 100%;
+}
+
+.num_stat {
+    margin-left: 20px !important;
+    box-shadow: rgb(241, 241, 241) 5px 5px 5px;
+    border-radius: 20px;
+    padding: 70px 20px 70px 20px;
+    width: 150px;
+    user-select: none;
+}
+
+.cctv_ctnr {
+    padding: 20px;
+    box-shadow: rgb(241, 241, 241) 5px 5px 5px;
+    border-radius: 20px;
+}
+
+.btn_tiny {
+    font-family: SourceSansPro;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: rgb(158, 232, 241);
+    box-shadow: rgb(238, 238, 238) 5px 5px 5px;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.btn_tiny:hover {background-color: rgb(140, 206, 226);}
+
+.graph {
+    box-shadow: rgb(241, 241, 241) 5px 5px 5px;
     width: 100%;
 }

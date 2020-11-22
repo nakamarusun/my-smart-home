@@ -2,19 +2,87 @@
 <head>
 <title>Smarthome Hub</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+<script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 <body>
 <div class="main_content">
     <h1 class="ctr nomgn" style="margin-top: 30px;">SmartHome Hub</h1>
     <h2 class="ctr nomgn">v1.0</h2>
     <div class="main_box">
-        <div class="box">
+        <div class="box row">
+            <div class="cctv_ctnr">
             <img id="cctv_img" src="https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png" alt="Image">
-            <canvas id="weather_num"></canvas>
+            </div>
+            <div class="num_stat box column">
+                <h1 id="temp">🌡</h1>
+                <h1 id="humid">💧</h1>
+                <h1 id="bright">☀</h1>
+                <div class="btn_tiny">Refresh</div>
+            </div>
         </div>
-        <div class="box">
-            <canvas id="weather_graph"></canvas>
+        <div class="box graph">
+            <canvas id="temp_graph"></canvas>
+        </div>
+        <div class="box graph">
+            <canvas id="humid_graph"></canvas>
+        </div>
+        <div class="box graph">
+            <canvas id="light_graph"></canvas>
         </div>
     </div>
 </div>
+<script>
+    var tGraph = new Chart(document.getElementById("temp_graph"), {
+        "type":"line",
+        "data":{
+            "labels":["January","February","March","April","May","June","July"],
+            "datasets":[
+            {
+                "label":"Real Temperature (°C)",
+                "data":[65,59,80,81,56,55,40],
+                "fill":false,
+                "borderColor":"rgb(217, 55, 37)",
+                "lineTension":0.1
+            },
+            {
+                "label":"Feels Like (°C)",
+                "data":[65,59, 55,40],
+                "fill":false,
+                "borderColor":"rgb(219, 116, 37)",
+                "lineTension":0.1
+            }
+            ]},
+        "options":{}
+    });
+    var hGraph = new Chart(document.getElementById("humid_graph"), {
+        "type":"line",
+        "data":{
+            "labels":["January","February","March","April","May","June","July"],
+            "datasets":[
+            {
+                "label":"Humidity (%)",
+                "data":[65,59,80,81,56,55,40],
+                "fill":false,
+                "borderColor":"rgb(75, 192, 192)",
+                "lineTension":0.1
+            }
+            ]},
+        "options":{}
+    });
+    var lCtx = document.getElementById("light_graph");
+    var lGraph = new Chart(lCtx, {
+        "type":"line",
+        "data":{
+            "labels":["January","February","March","April","May","June","July"],
+            "datasets":[
+            {
+                "label":"Brightness (Lx)",
+                "data":[65,59,80,81,56,55,40],
+                "fill":false,
+                "borderColor":"rgb(250, 240, 57)",
+                "lineTension":0.1
+            }
+            ]},
+        "options":{}
+    });
+</script>
 </body>
