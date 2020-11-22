@@ -38,13 +38,18 @@ h2 {
     color: rgb(131, 131, 131);
 }
 
+h3 {
+    font-family: SourceSansPro;
+    font-weight: normal;
+    color: rgb(58, 58, 58);
+}
+
 .main_content {
     margin: auto;
     max-width: 1000px;
 }
 
 .main_box {
-    margin-top: 50px;
     width: 100%;
     padding: 20px;
     display: flex;
@@ -101,6 +106,8 @@ canvas[id="weather_graph"] {
     box-shadow: rgb(238, 238, 238) 5px 5px 5px;
     cursor: pointer;
     transition: all 0.1s;
+    width: 100px;
+    margin: 10px auto 10px auto;
 }
 
 .btn_tiny:hover {background-color: rgb(140, 206, 226);}
