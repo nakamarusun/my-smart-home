@@ -55,6 +55,7 @@ def all_data():
 
         data = raw_data[floor(i)]
         # Masukkan semua data ke dictionary
+        print(data[0].timestamp())
         data_dict["get_time"].append(data[0].timestamp())
         data_dict["temp"].append(data[1])
         data_dict["hindex"].append(data[2])

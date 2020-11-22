@@ -40,7 +40,7 @@ h2 {
 
 .main_content {
     margin: auto;
-    max-width: 800px;
+    max-width: 1000px;
 }
 
 .main_box {
@@ -83,7 +83,7 @@ canvas[id="weather_graph"] {
     box-shadow: rgb(241, 241, 241) 5px 5px 5px;
     border-radius: 20px;
     padding: 70px 20px 70px 20px;
-    width: 150px;
+    width: 200px;
     user-select: none;
 }
 

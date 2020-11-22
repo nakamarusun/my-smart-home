@@ -13,10 +13,10 @@
             <img id="cctv_img" src="https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png" alt="Image">
             </div>
             <div class="num_stat box column">
-                <h1 id="temp">🌡</h1>
-                <h1 id="humid">💧</h1>
-                <h1 id="bright">☀</h1>
-                <div class="btn_tiny">Refresh</div>
+                <h1 id="temp">🌡 -----</h1>
+                <h1 id="humid">💧 ------</h1>
+                <h1 id="bright">☀ ------</h1>
+                <div class="btn_tiny" onclick="updateGraph()">Refresh</div>
             </div>
         </div>
         <div class="box graph">
@@ -31,21 +31,22 @@
     </div>
 </div>
 <script>
-    var tGraph = new Chart(document.getElementById("temp_graph"), {
+    var $=function(id){return document.getElementById(id);};
+    var tGraph = new Chart($("temp_graph"), {
         "type":"line",
         "data":{
-            "labels":["January","February","March","April","May","June","July"],
+            "labels":[],
             "datasets":[
             {
                 "label":"Real Temperature (°C)",
-                "data":[65,59,80,81,56,55,40],
+                "data":[],
                 "fill":false,
                 "borderColor":"rgb(217, 55, 37)",
                 "lineTension":0.1
             },
             {
                 "label":"Feels Like (°C)",
-                "data":[65,59, 55,40],
+                "data":[],
                 "fill":false,
                 "borderColor":"rgb(219, 116, 37)",
                 "lineTension":0.1
@@ -53,14 +54,14 @@
             ]},
         "options":{}
     });
-    var hGraph = new Chart(document.getElementById("humid_graph"), {
+    var hGraph = new Chart($("humid_graph"), {
         "type":"line",
         "data":{
             "labels":["January","February","March","April","May","June","July"],
             "datasets":[
             {
                 "label":"Humidity (%)",
-                "data":[65,59,80,81,56,55,40],
+                "data":[65,59,80,81],
                 "fill":false,
                 "borderColor":"rgb(75, 192, 192)",
                 "lineTension":0.1
@@ -68,7 +69,7 @@
             ]},
         "options":{}
     });
-    var lCtx = document.getElementById("light_graph");
+    var lCtx = $("light_graph");
     var lGraph = new Chart(lCtx, {
         "type":"line",
         "data":{
@@ -84,5 +85,45 @@
             ]},
         "options":{}
     });
+    function toDateTime(secs) {
+        var t = new Date(0); // Epoch
+        t.setUTCSeconds(secs);
+        return t;
+    }
+    function updateGraph() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var json = JSON.parse(this.responseText);
+                // Kita bisa update semua chartnya lewat sini.
+                $("temp").innerHTML = "🌡 " + json.hindex[json.hindex.length - 1] + " °C";
+                $("humid").innerText = "💧 " + json.humid[json.humid.length - 1] + " %";
+                $("bright").innerHTML = "☀ " + json.light[json.light.length - 1] + " Lx";
+
+                timeLabel = [];
+                for (i in json.get_time) {
+                    timeLabel.push(toDateTime(json.get_time[i]).toLocaleString());
+                }
+                
+                // Update graph temperaturnya
+                tGraph.data.labels = timeLabel;
+                tGraph.data.datasets[0].data = json.temp;
+                tGraph.data.datasets[1].data = json.hindex;
+
+                hGraph.data.labels = timeLabel;
+                hGraph.data.datasets[0].data = json.humid;
+
+                lGraph.data.labels = timeLabel;
+                lGraph.data.datasets[0].data = json.light;
+
+                tGraph.update();
+                hGraph.update();
+                lGraph.update();
+            }
+        }
+        xmlhttp.open("GET", "data", true);
+        xmlhttp.send();
+    }
+    updateGraph();
 </script>
 </body>
