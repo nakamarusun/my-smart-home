@@ -1,8 +1,14 @@
 from flask import (Flask, render_template)
 from flask_mysqldb import MySQL
-from os import environ, makedirs
+from os import environ, makedirs, path
 from SmartHomeServer.controllers import index, data_getter
 from SmartHomeServer import uncache, db, mqtt
+
+def makeDirsIfNaught(path):
+    try:
+        makedirs(path)
+    except OSError:
+        pass
 
 def create_app():
 
@@ -25,6 +31,10 @@ def create_app():
 
     # Buat aplikasi agar bisa diload tanpa cache.
     uncache.reg_static_uncache(app)
+
+    # Bikin directory instances jika tidak ada
+    makeDirsIfNaught(app.instance_path)
+    makeDirsIfNaught(path.join(app.instance_path, "images"))
 
     # Daftar semua blueprintnya
     app.register_blueprint(data_getter.bp)
