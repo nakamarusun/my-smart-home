@@ -20,6 +20,9 @@
 
 # Smart Doorbell
 
+## Circuit
+![SmartDoorbellCircuit](SmartDoorbellCircuit.jpg)
+
 ## 3D Model
 
 ![SmartDoorbell](SmartDoorbell.png)

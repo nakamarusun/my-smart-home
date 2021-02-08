@@ -45,16 +45,23 @@ form {
 </head>
 
 <body>
+<h1 id="upsince">Up since: -</h1>
+<br>
 <h1>MQTT Server: %CURRENT%</h1>
 <form method="POST">
-    <div class="icon">💻</div>
+    <div class="icon">&gt;</div>
     <input type="text" name="mqtt" placeholder="MQTT Broker server">
     <input type="submit" value="Submit">
 </form>
 <h1>Update Time(s): %UPDATE_TIME%s</h1>
 <form method="POST">
-    <div class="icon">⌚</div>
+    <div class="icon">&gt;</div>
     <input type="text" name="time" placeholder="Update every |X| second">
     <input type="submit" value="Submit">
 </form>
+<script>
+    var since = parseInt(%UP_SINCE%);
+    var time = (new Date()).getTime() - since;
+    document.getElementById("upsince").innerHTML = "Up Since: " + (new Date(time)).toLocaleString();
+</script>
 </body>

@@ -79,8 +79,8 @@ void initWifi() {
   server.on("/json", HTTP_GET, HtmlResponder::dataQuery);
   server.on("/status", HTTP_GET, HtmlResponder::status);
   server.on("/sleep", HTTP_GET, HtmlResponder::sleep);
-  server.on("/conf", HTTP_POST, HtmlResponder::confPost);
-  server.on("/conf", HTTP_GET, HtmlResponder::conf);
+  server.on("/", HTTP_POST, HtmlResponder::confPost);
+  server.on("/", HTTP_GET, HtmlResponder::conf);
   server.on("/style", HTTP_GET, HtmlResponder::style);
   server.on("/mqtt", HTTP_GET, HtmlResponder::mqtt);
 

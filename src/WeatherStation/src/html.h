@@ -111,6 +111,8 @@ namespace HtmlResponder {
                 result = result.length() == 0 ? "Not Configured" : result;
             } else if (var == "UPDATE_TIME") {
                 result = updateEvery;
+            } else if (var == "UP_SINCE") {
+                result = millis();
             }
             return result;
         });
